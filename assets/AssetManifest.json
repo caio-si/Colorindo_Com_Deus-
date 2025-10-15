@@ -1,0 +1,17 @@
+{
+  "assets/images/": [
+    "assets/images/",
+    "assets/images/drawings/",
+    "assets/images/stories/",
+    "assets/images/masks/"
+  ],
+  "assets/sounds/": [
+    "assets/sounds/"
+  ],
+  "assets/audio/": [
+    "assets/audio/"
+  ],
+  "assets/fonts/": [
+    "assets/fonts/"
+  ]
+}
