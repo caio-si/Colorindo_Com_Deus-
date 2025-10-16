@@ -1,9 +1,12 @@
+import 'drawing_lines.dart';
+
 class ProgressoUsuario {
   final String id;
   final String desenhoId;
   final Map<String, int> areasColoridas; // areaId -> cor (int value)
   final DateTime dataModificacao;
   final bool finalizado;
+  final DrawingLines? drawingLines; // Linhas de desenho livre
 
   ProgressoUsuario({
     required this.id,
@@ -11,6 +14,7 @@ class ProgressoUsuario {
     required this.areasColoridas,
     required this.dataModificacao,
     this.finalizado = false,
+    this.drawingLines,
   });
 
   Map<String, dynamic> toJson() {
@@ -20,6 +24,7 @@ class ProgressoUsuario {
       'areasColoridas': areasColoridas,
       'dataModificacao': dataModificacao.toIso8601String(),
       'finalizado': finalizado,
+      'drawingLines': drawingLines?.toJson(),
     };
   }
 
@@ -30,6 +35,9 @@ class ProgressoUsuario {
       areasColoridas: Map<String, int>.from(json['areasColoridas']),
       dataModificacao: DateTime.parse(json['dataModificacao']),
       finalizado: json['finalizado'] ?? false,
+      drawingLines: json['drawingLines'] != null 
+          ? DrawingLines.fromJson(json['drawingLines']) 
+          : null,
     );
   }
 
@@ -39,6 +47,7 @@ class ProgressoUsuario {
     Map<String, int>? areasColoridas,
     DateTime? dataModificacao,
     bool? finalizado,
+    DrawingLines? drawingLines,
   }) {
     return ProgressoUsuario(
       id: id ?? this.id,
@@ -46,6 +55,7 @@ class ProgressoUsuario {
       areasColoridas: areasColoridas ?? this.areasColoridas,
       dataModificacao: dataModificacao ?? this.dataModificacao,
       finalizado: finalizado ?? this.finalizado,
+      drawingLines: drawingLines ?? this.drawingLines,
     );
   }
 }

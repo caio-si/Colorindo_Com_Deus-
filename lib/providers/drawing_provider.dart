@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import '../models/desenho.dart';
 import '../models/progresso_usuario.dart';
+import '../models/drawing_lines.dart';
 import '../utils/paint_modes.dart';
 import '../utils/painting_tools.dart';
 import '../widgets/free_drawing_canvas.dart';
@@ -102,8 +103,19 @@ class DrawingProvider extends ChangeNotifier {
       }
     }
     
+    // Limpar pilhas de undo/redo
     _undoStack.clear();
     _redoStack.clear();
+    
+    // Limpar linhas de desenho livre
+    _drawingLines.clear();
+    _undoLines.clear();
+    _redoLines.clear();
+    
+    // Restaurar linhas de desenho salvas
+    if (_currentProgress != null && _currentProgress!.drawingLines != null) {
+      _drawingLines.addAll(_currentProgress!.drawingLines!.lines);
+    }
     
     notifyListeners();
   }
@@ -199,6 +211,25 @@ class DrawingProvider extends ChangeNotifier {
   Future<void> salvarProgresso() async {
     if (_currentProgress == null) return;
     
+    // Criar DrawingLines com as linhas atuais
+    final drawingLines = _drawingLines.isNotEmpty 
+        ? DrawingLines(lines: _drawingLines.map((line) => List<DrawingPoint>.from(line)).toList())
+        : null;
+    
+    // Atualizar data de modificação e linhas de desenho
+    _currentProgress = _currentProgress!.copyWith(
+      dataModificacao: DateTime.now(),
+      drawingLines: drawingLines,
+    );
+    
+    // Se há linhas desenhadas mas nenhuma área colorida (modo livre),
+    // adicionar uma entrada para indicar que há progresso
+    if (_drawingLines.isNotEmpty && _currentProgress!.areasColoridas.isEmpty) {
+      _currentProgress = _currentProgress!.copyWith(
+        areasColoridas: {'_free_drawing_marker': 1},
+      );
+    }
+    
     await _progressBox.put(
       'progress_${_currentProgress!.desenhoId}',
       _currentProgress!.toJson(),
@@ -222,6 +253,12 @@ class DrawingProvider extends ChangeNotifier {
     _currentProgress = null;
     _undoStack.clear();
     _redoStack.clear();
+    
+    // Limpar linhas de desenho livre
+    _drawingLines.clear();
+    _undoLines.clear();
+    _redoLines.clear();
+    
     notifyListeners();
   }
 }

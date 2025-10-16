@@ -4,6 +4,8 @@ import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../providers/gallery_provider.dart';
 import '../models/progresso_usuario.dart';
+import '../data/desenhos_data.dart';
+import 'coloring_screen.dart';
 
 class GalleryScreen extends StatefulWidget {
   const GalleryScreen({super.key});
@@ -217,6 +219,23 @@ class _GalleryItem extends StatelessWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
+  void _recolorirDesenho(BuildContext context, ProgressoUsuario progresso) async {
+    // Buscar o desenho correspondente
+    final desenhos = DesenhosData.obterDesenhos();
+    final desenho = desenhos.firstWhere(
+      (d) => d.id == progresso.desenhoId,
+      orElse: () => throw Exception('Desenho não encontrado'),
+    );
+    
+    // Navegar para a tela de colorir
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ColoringScreen(desenho: desenho),
+      ),
+    );
+  }
+
   void _showOptions(
     BuildContext context,
     AppLocalizations l10n,
@@ -242,7 +261,7 @@ class _GalleryItem extends StatelessWidget {
               title: Text(l10n.recolor),
               onTap: () {
                 Navigator.pop(context);
-                // Implementar recolorir
+                _recolorirDesenho(context, progresso);
               },
             ),
             ListTile(

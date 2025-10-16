@@ -99,21 +99,6 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
             
-            const SizedBox(height: 24),
-            
-            _buildSection(
-              context,
-              'Segurança',
-              [
-                SwitchListTile(
-                  title: Text(l10n.childMode),
-                  subtitle: const Text('Bloqueia acesso a configurações avançadas'),
-                  value: settingsProvider.childMode,
-                  onChanged: (_) => _toggleChildMode(context, settingsProvider),
-                  activeColor: AppColors.primary,
-                ),
-              ],
-            ),
             
             const SizedBox(height: 24),
             
@@ -184,33 +169,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _toggleChildMode(BuildContext context, SettingsProvider provider) {
-    if (provider.childMode) {
-      // Desativando modo infantil - pedir senha
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Modo Infantil'),
-          content: const Text('Digite a senha para desativar o Modo Infantil'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                provider.toggleChildMode();
-                Navigator.pop(context);
-              },
-              child: const Text('Desativar'),
-            ),
-          ],
-        ),
-      );
-    } else {
-      provider.toggleChildMode();
-    }
-  }
 
   void _showClearStorageDialog(
     BuildContext context,

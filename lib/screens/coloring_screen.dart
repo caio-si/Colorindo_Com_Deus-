@@ -5,6 +5,7 @@ import '../utils/app_colors.dart';
 import '../utils/paint_modes.dart';
 import '../models/desenho.dart';
 import '../providers/drawing_provider.dart';
+import '../providers/gallery_provider.dart';
 import '../widgets/color_palette_widget.dart';
 import '../widgets/free_drawing_canvas.dart';
 import '../widgets/tool_selector_widget.dart';
@@ -72,7 +73,11 @@ class _ColoringScreenState extends State<ColoringScreen> {
                    icon: const Icon(Icons.save),
                    onPressed: () async {
                      await drawingProvider.salvarProgresso();
+                     // Recarregar galeria após salvar
                      if (context.mounted) {
+                       final galleryProvider = Provider.of<GalleryProvider>(context, listen: false);
+                       await galleryProvider.carregarGaleria();
+                       
                        ScaffoldMessenger.of(context).showSnackBar(
                          SnackBar(
                            content: Text(l10n.save),
@@ -177,7 +182,11 @@ class _ColoringScreenState extends State<ColoringScreen> {
   ) async {
     await provider.finalizarDesenho();
     
+    // Recarregar galeria após finalizar
     if (context.mounted) {
+      final galleryProvider = Provider.of<GalleryProvider>(context, listen: false);
+      await galleryProvider.carregarGaleria();
+      
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
