@@ -9,6 +9,7 @@ import '../models/historia.dart';
 import '../providers/settings_provider.dart';
 import '../services/audio_service.dart';
 import 'coloring_screen.dart';
+import 'story_detail_screen.dart';
 
 class StoriesScreen extends StatelessWidget {
   const StoriesScreen({super.key});
@@ -225,34 +226,62 @@ class _StoryCardState extends State<_StoryCard> {
                 
                 const SizedBox(height: 16),
                 
-                // Botão colorir
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      final desenho = DesenhosData.obterDesenhoPorId(
-                        widget.historia.desenhoId,
-                      );
-                      if (desenho != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ColoringScreen(desenho: desenho),
+                // Botões de ação
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => StoryDetailScreen(historia: widget.historia),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.visibility),
+                        label: const Text('Ver História'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.secondary,
+                          side: BorderSide(color: AppColors.secondary),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.palette),
-                    label: Text(l10n.colorThisStory),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
-                  ),
+                    
+                    const SizedBox(width: 12),
+                    
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final desenho = DesenhosData.obterDesenhoPorId(
+                            widget.historia.desenhoId,
+                          );
+                          if (desenho != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ColoringScreen(desenho: desenho),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.palette),
+                        label: Text(l10n.colorThisStory),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
