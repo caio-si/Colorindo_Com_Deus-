@@ -123,28 +123,45 @@ class _PixelColoringCanvasState extends State<PixelColoringCanvas> {
                             final renderBox = context.findRenderObject() as RenderBox;
                             final localPosition = renderBox.globalToLocal(details.globalPosition);
                             
-                            print('Toque detectado em: ${localPosition.dx}, ${localPosition.dy}');
+                            print('=== DETECÇÃO DE TOQUE ===');
+                            print('Posição: (${localPosition.dx}, ${localPosition.dy})');
+                            print('Tamanho da máscara: ${img.width} x ${img.height}');
+                            
+                            // Verificar se o toque está dentro dos limites da imagem
+                            if (localPosition.dx < 0 || localPosition.dx >= img.width ||
+                                localPosition.dy < 0 || localPosition.dy >= img.height) {
+                              print('Toque fora dos limites da máscara');
+                              return;
+                            }
                             
                             // Converter para int e verificar se img.pixelColorAt não é null
                             if (img.pixelColorAt != null) {
-                              final pixelColor = img.pixelColorAt!(
-                                localPosition.dx.round(), 
-                                localPosition.dy.round()
-                              );
+                              final x = localPosition.dx.round();
+                              final y = localPosition.dy.round();
                               
-                              print('Cor do pixel: $pixelColor');
+                              final pixelColor = img.pixelColorAt!(x, y);
                               
-                                     if (pixelColor != null) {
-                                       // Encontrar a área correspondente à cor
-                                       final areaName = _findAreaByColor(pixelColor);
-                                       print('Área encontrada: $areaName');
-                                       if (areaName != null) {
-                                         _handleAreaColorir(areaName, desenho, drawingProvider);
-                                       } else {
-                                         print('Área não reconhecida - cor não mapeada');
-                                       }
-                                     }
+                              if (pixelColor != null) {
+                                print('Cor do pixel em ($x, $y): 0x${pixelColor.value.toRadixString(16).padLeft(8, '0')}');
+                                print('RGB: R=${pixelColor.red}, G=${pixelColor.green}, B=${pixelColor.blue}');
+                                
+                                // Encontrar a área correspondente à cor
+                                final areaName = _findAreaByColor(pixelColor);
+                                print('Área encontrada: $areaName');
+                                
+                                if (areaName != null) {
+                                  _handleAreaColorir(areaName, desenho, drawingProvider);
+                                } else {
+                                  print('Área não reconhecida - cor não mapeada');
+                                  print('Cor esperada: 0x${const Color(0xFF00FF00).value.toRadixString(16)}');
+                                }
+                              } else {
+                                print('pixelColor é null');
+                              }
+                            } else {
+                              print('img.pixelColorAt é null');
                             }
+                            print('========================');
                           },
                           child: Container(
                             width: double.infinity,
@@ -173,19 +190,15 @@ class _PixelColoringCanvasState extends State<PixelColoringCanvas> {
   }
 
   String? _getMaskPath(String historiaId) {
-    // Temporariamente desabilitado para garantir funcionamento
-    print('Máscara desabilitada temporariamente');
-    return null;
-    
     // Mapeamento específico para máscaras
-    // final maskMapping = {
-    //   '2': 'images/masks/Arca de Noe_Mask.png', // Arca de Noé
-    //   // Adicione outros desenhos conforme você criar as máscaras
-    // };
+    final maskMapping = {
+      '2': 'assets/images/masks/Arca de Noe_Mask.png', // Arca de Noé
+      // Adicione outros desenhos conforme você criar as máscaras
+    };
     
-    // final maskPath = maskMapping[historiaId];
-    // print('Máscara para história $historiaId: $maskPath');
-    // return maskPath;
+    final maskPath = maskMapping[historiaId];
+    print('Máscara para história $historiaId: $maskPath');
+    return maskPath;
   }
 
   String? _findAreaByColor(Color pixelColor) {
@@ -199,16 +212,43 @@ class _PixelColoringCanvasState extends State<PixelColoringCanvas> {
     return null;
   }
 
-  bool _colorsAreSimilar(Color color1, Color color2, {double tolerance = 50}) {
+  bool _colorsAreSimilar(Color color1, Color color2, {int tolerance = 30}) {
     final rDiff = (color1.red - color2.red).abs();
     final gDiff = (color1.green - color2.green).abs();
     final bDiff = (color1.blue - color2.blue).abs();
+    
+    // Para verde puro (#00FF00), ser mais estrito
+    if (color2.value == 0xFF00FF00) {
+      return rDiff <= tolerance && gDiff <= tolerance && bDiff <= tolerance;
+    }
     
     return rDiff <= tolerance && gDiff <= tolerance && bDiff <= tolerance;
   }
 
   void _handleAreaColorir(String areaName, Desenho desenho, DrawingProvider provider) {
-    // No modo com máscara, vamos mostrar uma lista de áreas para o usuário escolher
+    print('_handleAreaColorir chamado para: $areaName');
+    
+    // Se a máscara detectou uma área colorível (verde)
+    if (areaName == 'area_colorivel') {
+      // No modo guiado, precisamos de uma área selecionada primeiro
+      if (provider.paintMode == PaintMode.guided) {
+        if (provider.selectedAreaId != null) {
+          print('Colorindo área selecionada: ${provider.selectedAreaId}');
+          provider.colorirAreaSelecionada();
+        } else {
+          // Se não há área selecionada, mostrar menu
+          print('Nenhuma área selecionada, mostrando menu');
+          _showAreaSelectionMenu(desenho, provider);
+        }
+      } else {
+        // Modo livre - mostrar menu para escolher qual área colorir
+        print('Modo livre - mostrando menu de áreas');
+        _showAreaSelectionMenu(desenho, provider);
+      }
+    }
+  }
+  
+  void _showAreaSelectionMenu(Desenho desenho, DrawingProvider provider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -228,6 +268,9 @@ class _PixelColoringCanvasState extends State<PixelColoringCanvas> {
                 ),
                 title: Text(areaName),
                 subtitle: Text('Área ${index + 1}'),
+                trailing: area.corPreenchida != null
+                    ? Icon(Icons.check, color: Colors.green)
+                    : null,
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
