@@ -29,8 +29,6 @@ dependencies:
   image_picker: ^1.0.5
   image_gallery_saver: ^2.0.3
   screenshot: ^2.1.0
-  image: ^4.1.7
-  image_pixels: ^4.0.2
   
   # Compartilhamento
   share_plus: ^7.2.1
@@ -61,7 +59,6 @@ flutter:
     - assets/images/
     - assets/images/stories/
     - assets/images/drawings/
-    - assets/images/masks/
     - assets/sounds/
     - assets/audio/
   

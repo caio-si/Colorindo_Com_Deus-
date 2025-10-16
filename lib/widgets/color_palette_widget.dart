@@ -11,6 +11,8 @@ class ColorPaletteWidget extends StatelessWidget {
     final drawingProvider = Provider.of<DrawingProvider>(context);
     final selectedColor = drawingProvider.selectedColor;
 
+
+    // Paleta tradicional para outros modos
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
@@ -27,11 +29,11 @@ class ColorPaletteWidget extends StatelessWidget {
           const SizedBox(height: 8),
           Expanded(
             child: GridView.builder(
-              scrollDirection: Axis.horizontal,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
+                crossAxisCount: 4, // 4 colunas para mais cores
+                mainAxisSpacing: 6,
+                crossAxisSpacing: 6,
+                childAspectRatio: 1,
               ),
               itemCount: AppColors.paintColors.length,
               itemBuilder: (context, index) {
@@ -45,15 +47,15 @@ class ColorPaletteWidget extends StatelessWidget {
                       color: color,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isSelected ? Colors.black : Colors.grey,
-                        width: isSelected ? 4 : 2,
+                        color: isSelected ? Colors.black : Colors.grey.shade400,
+                        width: isSelected ? 3 : 1.5,
                       ),
                       boxShadow: [
                         if (isSelected)
                           BoxShadow(
-                            color: color.withOpacity(0.5),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                            color: color.withOpacity(0.6),
+                            blurRadius: 8,
+                            spreadRadius: 1,
                           ),
                       ],
                     ),
@@ -61,7 +63,7 @@ class ColorPaletteWidget extends StatelessWidget {
                         ? const Icon(
                             Icons.check,
                             color: Colors.white,
-                            size: 20,
+                            size: 16,
                           )
                         : null,
                   ),

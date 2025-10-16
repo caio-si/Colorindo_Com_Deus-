@@ -7,29 +7,26 @@ Para implementar a detecção precisa de áreas para colorir, você precisa cria
 1. **Imagem Principal** - A que o usuário vê (linhas pretas, fundo branco)
 2. **Imagem de Máscara** - Idêntica, mas com cada área preenchida com uma cor sólida diferente
 
-## 🎨 Mapa de Cores SIMPLIFICADO
+## 🎨 Mapa de Cores - CADA ÁREA UMA COR DIFERENTE
 
-**TODAS as áreas coloríveis = `#00FF00` (Verde puro)**
+**⚠️ IMPORTANTE:** Use cores EXATAS para que cada área seja detectada corretamente!
 
-Agora é muito mais simples:
-- **Sol** = `#00FF00` (Verde)
-- **Nuvem 1** = `#00FF00` (Verde)
-- **Nuvem 2** = `#00FF00` (Verde)
-- **Arco-íris** = `#00FF00` (Verde)
-- **Corpo da Arca** = `#00FF00` (Verde)
-- **Cabana da Arca** = `#00FF00` (Verde)
-- **Janela** = `#00FF00` (Verde)
-- **Elefante** = `#00FF00` (Verde)
-- **Macaco** = `#00FF00` (Verde)
-- **Girafa** = `#00FF00` (Verde)
-- **Leão** = `#00FF00` (Verde)
-- **Zebra** = `#00FF00` (Verde)
-- **Ovelha** = `#00FF00` (Verde)
-- **Pássaro** = `#00FF00` (Verde)
-- **Água** = `#00FF00` (Verde)
-- **Troncos da Arca** = `#00FF00` (Verde)
+**Consulte o arquivo `MAPA_CORES_MASCARA.md` para a tabela completa!**
 
-**✨ VANTAGEM:** Você só precisa de UMA cor! Cada área distinta que você pintar com verde será detectada como uma área separada para colorir.
+Exemplo:
+- **Sol** = `#FFFF00` (Amarelo puro)
+- **Nuvem 1** = `#00FFFF` (Ciano)
+- **Nuvem 2** = `#0080FF` (Azul claro)
+- **Arco-íris** = `#FF00FF` (Magenta)
+- **Corpo da Arca** = `#FF8000` (Laranja)
+- **Girafa** = `#FFFF80` (Amarelo claro)
+- **Leão** = `#FFC000` (Dourado)
+- **Água** = `#0000FF` (Azul puro)
+- **Pássaro** = `#00FF00` (Verde puro)
+
+E assim por diante... **Cada elemento tem sua cor única!**
+
+**✨ VANTAGEM:** Detecção precisa de cada área individual!
 
 ## 🛠️ Como Criar
 
@@ -37,16 +34,18 @@ Agora é muito mais simples:
 
 1. **Acesse:** [photopea.com](https://photopea.com)
 2. **Abra a imagem:** `File` → `Open` (sua imagem original)
-3. **Configure a cor:** Clique no quadrado de cor → Digite `#00FF00` → Enter
-4. **Magic Wand (W):** Selecione uma área branca (ex: dentro do sol)
-5. **Paint Bucket (G):** Clique na área selecionada para pintar de verde
-6. **Repita para TODAS as áreas:** 
-   - Magic Wand em nova área
-   - Paint Bucket para pintar de verde
-   - Continue até pintar todas as áreas coloríveis
-7. **Salve:** `File` → `Export As` → `PNG` → Nome: `[Nome]_mask.png`
+3. **Para CADA área do mapa de cores:**
+   - **Configure a cor:** Clique no quadrado de cor → Digite a cor EXATA (ex: `FFFF00` para o sol) → Enter
+   - **Magic Wand (W):** Selecione a área branca correspondente
+   - **Paint Bucket (G):** Clique para pintar com a cor específica
+   - **Verifique:** Use Eyedropper (I) para confirmar que a cor está correta
+4. **Repita** para todas as 15 áreas do `MAPA_CORES_MASCARA.md`
+5. **Salve:** `File` → `Export As` → `PNG` → Nome: `Arca de Noe_Mask.png`
 
-**⚡ DICA:** Agora você só precisa de UMA cor (verde) para todas as áreas! Muito mais rápido!
+**⚡ DICA IMPORTANTE:** 
+- Copie e cole as cores EXATAS do `MAPA_CORES_MASCARA.md`
+- Use o Eyedropper (I) para verificar cada cor antes de salvar
+- NÃO use cores parecidas - precisam ser EXATAS!
 
 ### Opção 2: Photoshop/GIMP
 1. Abra a imagem original

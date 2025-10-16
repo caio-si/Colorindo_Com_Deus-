@@ -37,33 +37,36 @@ class DesenhosData {
     List<DesenhoArea> areas = [];
     
     // Áreas menores e mais específicas para diferentes elementos do desenho
+    // Cada área tem: posição, tamanho, nome, número (1-15) e cor sugerida
     final areasConfig = [
       // Céu e elementos do céu
-      {'x': 50, 'y': 50, 'w': 80, 'h': 80, 'name': 'sol'}, // Sol
-      {'x': 150, 'y': 80, 'w': 60, 'h': 60, 'name': 'nuvem1'}, // Nuvem 1
-      {'x': 200, 'y': 70, 'w': 60, 'h': 60, 'name': 'nuvem2'}, // Nuvem 2
-      {'x': 100, 'y': 120, 'w': 120, 'h': 20, 'name': 'arco_iris'}, // Arco-íris
+      {'x': 50, 'y': 50, 'w': 80, 'h': 80, 'name': 'sol', 'numero': 1, 'cor': Colors.yellow}, // Sol
+      {'x': 150, 'y': 80, 'w': 60, 'h': 60, 'name': 'nuvem1', 'numero': 2, 'cor': Colors.grey}, // Nuvem 1
+      {'x': 200, 'y': 70, 'w': 60, 'h': 60, 'name': 'nuvem2', 'numero': 3, 'cor': Colors.white}, // Nuvem 2
+      {'x': 150, 'y': 140, 'w': 60, 'h': 40, 'name': 'gotas_nuvem1', 'numero': 4, 'cor': Colors.pink}, // Gotas Nuvem 1
+      {'x': 200, 'y': 130, 'w': 60, 'h': 40, 'name': 'gotas_nuvem2', 'numero': 5, 'cor': Colors.purple}, // Gotas Nuvem 2
+      {'x': 100, 'y': 120, 'w': 120, 'h': 20, 'name': 'arco_iris', 'numero': 6, 'cor': Colors.blue}, // Arco-íris
       
       // Arca
-      {'x': 80, 'y': 200, 'w': 180, 'h': 100, 'name': 'arca_corpo'}, // Corpo da arca
-      {'x': 120, 'y': 180, 'w': 100, 'h': 40, 'name': 'arca_cabana'}, // Cabana da arca
-      {'x': 140, 'y': 190, 'w': 20, 'h': 20, 'name': 'janela'}, // Janela da arca
+      {'x': 80, 'y': 200, 'w': 180, 'h': 100, 'name': 'arca_corpo', 'numero': 7, 'cor': Colors.brown}, // Corpo da arca
+      {'x': 120, 'y': 180, 'w': 100, 'h': 40, 'name': 'arca_cabana', 'numero': 8, 'cor': Colors.green}, // Cabana da arca
+      {'x': 140, 'y': 190, 'w': 20, 'h': 20, 'name': 'janela', 'numero': 9, 'cor': Colors.lightBlue}, // Janela da arca
       
       // Animais na arca
-      {'x': 90, 'y': 210, 'w': 40, 'h': 60, 'name': 'elefante'}, // Elefante
-      {'x': 130, 'y': 200, 'w': 30, 'h': 40, 'name': 'macaco'}, // Macaco
-      {'x': 160, 'y': 190, 'w': 20, 'h': 50, 'name': 'girafa'}, // Girafa
+      {'x': 90, 'y': 210, 'w': 40, 'h': 60, 'name': 'elefante', 'numero': 10, 'cor': Colors.white}, // Elefante
+      {'x': 130, 'y': 200, 'w': 30, 'h': 40, 'name': 'macaco', 'numero': 11, 'cor': Colors.green}, // Macaco
+      {'x': 160, 'y': 190, 'w': 20, 'h': 50, 'name': 'girafa', 'numero': 12, 'cor': Color(0xFF2E7D32)}, // Girafa
       
       // Animais na rampa
-      {'x': 270, 'y': 250, 'w': 40, 'h': 50, 'name': 'leao'}, // Leão
-      {'x': 270, 'y': 300, 'w': 40, 'h': 50, 'name': 'zebra'}, // Zebra
-      {'x': 270, 'y': 350, 'w': 40, 'h': 40, 'name': 'ovelha'}, // Ovelha
+      {'x': 270, 'y': 250, 'w': 40, 'h': 50, 'name': 'leao', 'numero': 13, 'cor': Colors.pink}, // Leão
+      {'x': 270, 'y': 300, 'w': 40, 'h': 50, 'name': 'zebra', 'numero': 14, 'cor': Colors.purple}, // Zebra
+      {'x': 270, 'y': 350, 'w': 40, 'h': 40, 'name': 'ovelha', 'numero': 15, 'cor': Colors.orange}, // Ovelha
       
       // Água
-      {'x': 50, 'y': 320, 'w': 300, 'h': 30, 'name': 'agua'}, // Água
+      {'x': 50, 'y': 320, 'w': 300, 'h': 30, 'name': 'agua', 'numero': 16, 'cor': Colors.brown}, // Água
       
       // Pássaro
-      {'x': 180, 'y': 150, 'w': 15, 'h': 15, 'name': 'passaro'}, // Pássaro
+      {'x': 180, 'y': 150, 'w': 15, 'h': 15, 'name': 'passaro', 'numero': 17, 'cor': Colors.red}, // Pássaro
     ];
     
     for (int i = 0; i < areasConfig.length; i++) {
@@ -73,12 +76,16 @@ class DesenhosData {
       final w = (config['w'] as int).toDouble();
       final h = (config['h'] as int).toDouble();
       final name = config['name'] as String;
+      final numero = config['numero'] as int;
+      final cor = config['cor'] as Color;
       
       areas.add(DesenhoArea(
         id: '${desenhoId}_${name}',
         path: Path()
           ..addRect(Rect.fromLTWH(x, y, w, h)),
         bounds: Rect.fromLTWH(x, y, w, h),
+        numero: numero,
+        corSugerida: cor,
       ));
     }
     

@@ -6,7 +6,8 @@ import '../utils/paint_modes.dart';
 import '../models/desenho.dart';
 import '../providers/drawing_provider.dart';
 import '../widgets/color_palette_widget.dart';
-import '../widgets/pixel_coloring_canvas.dart';
+import '../widgets/free_drawing_canvas.dart';
+import '../widgets/tool_selector_widget.dart';
 
 class ColoringScreen extends StatefulWidget {
   final Desenho desenho;
@@ -18,6 +19,8 @@ class ColoringScreen extends StatefulWidget {
 }
 
 class _ColoringScreenState extends State<ColoringScreen> {
+  final GlobalKey<FreeDrawingCanvasState> _freeDrawingKey = GlobalKey<FreeDrawingCanvasState>();
+  
   @override
   void initState() {
     super.initState();
@@ -38,40 +41,6 @@ class _ColoringScreenState extends State<ColoringScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
-          // Botão de alternância de modo
-          PopupMenuButton<PaintMode>(
-            icon: Icon(
-              drawingProvider.paintMode == PaintMode.free 
-                ? Icons.brush 
-                : Icons.touch_app,
-            ),
-            tooltip: 'Modo de Pintura',
-            onSelected: (PaintMode mode) {
-              drawingProvider.setPaintMode(mode);
-            },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<PaintMode>(
-                value: PaintMode.guided,
-                child: Row(
-                  children: [
-                    Text(drawingProvider.paintMode == PaintMode.guided ? '🔢' : ''),
-                    const SizedBox(width: 8),
-                    Text(PaintMode.guided.displayName),
-                  ],
-                ),
-              ),
-              PopupMenuItem<PaintMode>(
-                value: PaintMode.free,
-                child: Row(
-                  children: [
-                    Text(drawingProvider.paintMode == PaintMode.free ? '🎨' : ''),
-                    const SizedBox(width: 8),
-                    Text(PaintMode.free.displayName),
-                  ],
-                ),
-              ),
-            ],
-          ),
           IconButton(
             icon: const Icon(Icons.undo),
             onPressed: drawingProvider.canUndo
@@ -86,74 +55,104 @@ class _ColoringScreenState extends State<ColoringScreen> {
                 : null,
             tooltip: l10n.redo,
           ),
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () async {
-              await drawingProvider.salvarProgresso();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.save),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              }
-            },
-            tooltip: l10n.save,
-          ),
+                 IconButton(
+                   icon: Icon(
+                     drawingProvider.isMoveMode ? Icons.brush : Icons.pan_tool,
+                     color: drawingProvider.isMoveMode ? AppColors.primary : Colors.white,
+                   ),
+                   onPressed: () {
+                     drawingProvider.toggleMoveMode();
+                   },
+                   tooltip: drawingProvider.isMoveMode ? 'Modo Pintura' : 'Modo Movimento',
+                   style: IconButton.styleFrom(
+                     backgroundColor: drawingProvider.isMoveMode ? Colors.white : AppColors.primary,
+                   ),
+                 ),
+                 IconButton(
+                   icon: const Icon(Icons.save),
+                   onPressed: () async {
+                     await drawingProvider.salvarProgresso();
+                     if (context.mounted) {
+                       ScaffoldMessenger.of(context).showSnackBar(
+                         SnackBar(
+                           content: Text(l10n.save),
+                           duration: const Duration(seconds: 2),
+                         ),
+                       );
+                     }
+                   },
+                   tooltip: l10n.save,
+                 ),
+                 ElevatedButton.icon(
+                   onPressed: () => _finalizarDesenho(context, drawingProvider, l10n),
+                   icon: const Icon(Icons.check),
+                   label: Text(l10n.finish),
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: AppColors.success,
+                     foregroundColor: Colors.white,
+                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                   ),
+                 ),
         ],
       ),
       body: Column(
         children: [
-          // Área de Desenho
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              child: const PixelColoringCanvas(),
-            ),
-          ),
+                 // Área de Desenho
+                 Expanded(
+                   child: Container(
+                     color: Colors.white,
+                     child: FreeDrawingCanvas(key: _freeDrawingKey),
+                   ),
+                 ),
           
-          // Barra de informações do modo
+                 // Barra de informações
+                 Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                   color: AppColors.background,
+                   child: Row(
+                     children: [
+                       Icon(
+                         drawingProvider.isMoveMode ? Icons.pan_tool : Icons.brush,
+                         color: drawingProvider.isMoveMode ? AppColors.textSecondary : AppColors.primary,
+                         size: 20,
+                       ),
+                       const SizedBox(width: 8),
+                       Expanded(
+                         child: Text(
+                           drawingProvider.isMoveMode 
+                             ? 'Modo Movimento - Arraste para mover e use dois dedos para zoom'
+                             : 'Modo Pintura - Arraste para pintar',
+                           style: TextStyle(
+                             color: drawingProvider.isMoveMode ? AppColors.textSecondary : AppColors.primary,
+                             fontSize: 12,
+                             fontWeight: FontWeight.bold,
+                           ),
+                         ),
+                       ),
+                       if (drawingProvider.isMoveMode)
+                         Icon(Icons.zoom_in, color: AppColors.primary, size: 16),
+                     ],
+                   ),
+                 ),
+          
+          // Seletor de Ferramentas
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: AppColors.background,
-            child: Row(
-              children: [
-                Icon(
-                  drawingProvider.paintMode == PaintMode.free 
-                    ? Icons.brush 
-                    : Icons.touch_app,
-                  color: AppColors.primary,
-                  size: 20,
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: const Offset(0, -2),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    drawingProvider.paintMode.description,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                if (drawingProvider.paintMode == PaintMode.guided && 
-                    drawingProvider.selectedAreaId != null)
-                  ElevatedButton(
-                    onPressed: () => drawingProvider.colorirAreaSelecionada(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    ),
-                    child: const Text('Pintar Área'),
-                  ),
               ],
             ),
+            child: const ToolSelectorWidget(),
           ),
           
           // Paleta de Cores
           Container(
-            height: 120,
+            height: 140,
             decoration: BoxDecoration(
               color: AppColors.cardBackground,
               boxShadow: [
@@ -167,12 +166,6 @@ class _ColoringScreenState extends State<ColoringScreen> {
             child: const ColorPaletteWidget(),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _finalizarDesenho(context, drawingProvider, l10n),
-        backgroundColor: AppColors.success,
-        icon: const Icon(Icons.check),
-        label: Text(l10n.finish),
       ),
     );
   }

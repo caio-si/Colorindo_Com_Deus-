@@ -46,18 +46,24 @@ class DesenhoArea {
   final String id;
   final Path path;
   final Rect bounds;
+  final int numero; // Número para colorir por números (1-15)
+  final Color corSugerida; // Cor sugerida para esta área
   Color? corPreenchida;
 
   DesenhoArea({
     required this.id,
     required this.path,
     required this.bounds,
+    required this.numero,
+    required this.corSugerida,
     this.corPreenchida,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'numero': numero,
+      'corSugerida': corSugerida.value,
       'corPreenchida': corPreenchida?.value,
     };
   }
@@ -67,10 +73,22 @@ class DesenhoArea {
       id: json['id'],
       path: Path(), // Será carregado do SVG
       bounds: Rect.zero,
+      numero: json['numero'] ?? 1,
+      corSugerida: Color(json['corSugerida'] ?? 0xFF000000),
       corPreenchida: json['corPreenchida'] != null
           ? Color(json['corPreenchida'])
           : null,
     );
   }
+
+  void preencherComCor(Color cor) {
+    corPreenchida = cor;
+  }
+
+  void limpar() {
+    corPreenchida = null;
+  }
+
+  bool get isPreenchida => corPreenchida != null;
 }
 

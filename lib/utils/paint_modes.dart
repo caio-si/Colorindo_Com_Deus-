@@ -1,10 +1,7 @@
 /// Enum para os modos de pintura disponíveis
 enum PaintMode {
-  /// Modo livre - toque direto na área para colorir
+  /// Modo livre - arrastar para pintar livremente
   free,
-  
-  /// Modo guiado - selecionar número da área e depois a cor
-  guided,
 }
 
 /// Extensão para facilitar o uso do enum
@@ -14,8 +11,6 @@ extension PaintModeExtension on PaintMode {
     switch (this) {
       case PaintMode.free:
         return 'Modo Livre';
-      case PaintMode.guided:
-        return 'Modo Guiado';
     }
   }
   
@@ -24,8 +19,6 @@ extension PaintModeExtension on PaintMode {
     switch (this) {
       case PaintMode.free:
         return '🎨';
-      case PaintMode.guided:
-        return '🔢';
     }
   }
   
@@ -33,9 +26,7 @@ extension PaintModeExtension on PaintMode {
   String get description {
     switch (this) {
       case PaintMode.free:
-        return 'Toque diretamente na área para colorir';
-      case PaintMode.guided:
-        return 'Selecione o número da área e depois a cor';
+        return 'Arraste o dedo para pintar livremente';
     }
   }
 }

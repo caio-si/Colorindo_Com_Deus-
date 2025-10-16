@@ -4,6 +4,8 @@ import 'package:uuid/uuid.dart';
 import '../models/desenho.dart';
 import '../models/progresso_usuario.dart';
 import '../utils/paint_modes.dart';
+import '../utils/painting_tools.dart';
+import '../widgets/free_drawing_canvas.dart';
 
 class DrawingProvider extends ChangeNotifier {
   final Box _progressBox = Hive.box('progress');
@@ -12,19 +14,31 @@ class DrawingProvider extends ChangeNotifier {
   Desenho? _currentDesenho;
   ProgressoUsuario? _currentProgress;
   Color _selectedColor = Colors.red;
-  PaintMode _paintMode = PaintMode.guided;
+  PaintMode _paintMode = PaintMode.free;
   String? _selectedAreaId;
+  PaintingTool _selectedTool = PaintingTool.mediumBrush;
+  bool _isMoveMode = false; // false = modo pintura, true = modo movimento
   
   final List<Map<String, int>> _undoStack = [];
   final List<Map<String, int>> _redoStack = [];
+  
+  // Para desenho livre
+  final List<List<DrawingPoint>> _drawingLines = [];
+  final List<List<List<DrawingPoint>>> _undoLines = [];
+  final List<List<List<DrawingPoint>>> _redoLines = [];
 
   Desenho? get currentDesenho => _currentDesenho;
   ProgressoUsuario? get currentProgress => _currentProgress;
   Color get selectedColor => _selectedColor;
   PaintMode get paintMode => _paintMode;
   String? get selectedAreaId => _selectedAreaId;
-  bool get canUndo => _undoStack.isNotEmpty;
-  bool get canRedo => _redoStack.isNotEmpty;
+  PaintingTool get selectedTool => _selectedTool;
+  bool get isMoveMode => _isMoveMode;
+  bool get canUndo => _undoLines.isNotEmpty;
+  bool get canRedo => _redoLines.isNotEmpty;
+  
+  // Getters para desenho livre
+  List<List<DrawingPoint>> get drawingLines => _drawingLines;
 
   void setSelectedColor(Color color) {
     _selectedColor = color;
@@ -37,11 +51,21 @@ class DrawingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setSelectedTool(PaintingTool tool) {
+    _selectedTool = tool;
+    notifyListeners();
+  }
+
+  void toggleMoveMode() {
+    _isMoveMode = !_isMoveMode;
+    notifyListeners();
+  }
+
   void selectArea(String areaId) {
-    if (_paintMode == PaintMode.guided) {
-      _selectedAreaId = areaId;
-      notifyListeners();
-    }
+    // No modo livre, não precisamos selecionar áreas
+    // Este método pode ser removido ou usado para outras funcionalidades
+    _selectedAreaId = areaId;
+    notifyListeners();
   }
 
   void clearAreaSelection() {
@@ -86,13 +110,18 @@ class DrawingProvider extends ChangeNotifier {
 
   void colorirArea(String areaId) {
     // No modo livre, pinta diretamente
-    if (_paintMode == PaintMode.free) {
-      _pintarArea(areaId);
-    }
-    // No modo guiado, apenas seleciona a área
-    else if (_paintMode == PaintMode.guided) {
-      selectArea(areaId);
-    }
+    _pintarArea(areaId);
+  }
+
+  void addDrawingLine(List<DrawingPoint> line) {
+    // Salvar estado atual para undo
+    _undoLines.add(_drawingLines.map((line) => List<DrawingPoint>.from(line)).toList());
+    _redoLines.clear();
+    
+    // Adicionar nova linha
+    _drawingLines.add(List<DrawingPoint>.from(line));
+    
+    notifyListeners();
   }
 
   void colorirAreaSelecionada() {
@@ -148,44 +177,22 @@ class DrawingProvider extends ChangeNotifier {
   void undo() {
     if (!canUndo) return;
     
-    _redoStack.add(Map.from(_currentProgress!.areasColoridas));
-    final previousState = _undoStack.removeLast();
-    
-    _currentProgress = _currentProgress!.copyWith(
-      areasColoridas: previousState,
-      dataModificacao: DateTime.now(),
-    );
-    
-    // Atualizar áreas do desenho
-    if (_currentDesenho != null) {
-      for (var area in _currentDesenho!.areas) {
-        final cor = previousState[area.id];
-        area.corPreenchida = cor != null ? Color(cor) : null;
-      }
-    }
-    
+    // Undo para desenho livre
+    _redoLines.add(_drawingLines.map((line) => List<DrawingPoint>.from(line)).toList());
+    final restoredLines = _undoLines.removeLast();
+    _drawingLines.clear();
+    _drawingLines.addAll(restoredLines);
     notifyListeners();
   }
 
   void redo() {
     if (!canRedo) return;
     
-    _undoStack.add(Map.from(_currentProgress!.areasColoridas));
-    final nextState = _redoStack.removeLast();
-    
-    _currentProgress = _currentProgress!.copyWith(
-      areasColoridas: nextState,
-      dataModificacao: DateTime.now(),
-    );
-    
-    // Atualizar áreas do desenho
-    if (_currentDesenho != null) {
-      for (var area in _currentDesenho!.areas) {
-        final cor = nextState[area.id];
-        area.corPreenchida = cor != null ? Color(cor) : null;
-      }
-    }
-    
+    // Redo para desenho livre
+    _undoLines.add(_drawingLines.map((line) => List<DrawingPoint>.from(line)).toList());
+    final restoredLines = _redoLines.removeLast();
+    _drawingLines.clear();
+    _drawingLines.addAll(restoredLines);
     notifyListeners();
   }
 
