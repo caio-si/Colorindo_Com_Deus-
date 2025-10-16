@@ -20,16 +20,7 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColors.primary.withOpacity(0.2),
-              AppColors.background,
-            ],
-          ),
-        ),
+        color: Colors.white,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -142,10 +133,10 @@ class HomeScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
-        // Ícone/Logo do App
+        // Logo personalizada
         Container(
-          width: 120,
-          height: 120,
+          width: 280,
+          height: 280,
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
@@ -157,27 +148,25 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(
-            Icons.brush,
-            size: 60,
-            color: AppColors.primary,
+          child: ClipOval(
+            child: Image.asset(
+              'icon/logo.png',
+              width: 280,
+              height: 280,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                // Fallback caso a imagem não carregue
+                return Icon(
+                  Icons.brush,
+                  size: 60,
+                  color: AppColors.primary,
+                );
+              },
+            ),
           ),
         ),
         
         const SizedBox(height: 24),
-        
-        // Título
-        Text(
-          l10n.appName,
-          style: const TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        
-        const SizedBox(height: 8),
         
         // Subtítulo
         Text(
