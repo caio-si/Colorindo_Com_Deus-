@@ -33,7 +33,6 @@ class ImageMapping {
     final fileName = _drawingImages[historiaId];
     if (fileName == null) return null;
     
-    // Para Flutter Web, usar caminho completo a partir de assets/
     return 'assets/images/drawings/$fileName';
   }
 

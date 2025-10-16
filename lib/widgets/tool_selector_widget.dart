@@ -12,10 +12,11 @@ class ToolSelectorWidget extends StatelessWidget {
     final drawingProvider = Provider.of<DrawingProvider>(context);
 
     return Container(
-      height: 80,
+      height: 100,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
             'Ferramentas',
@@ -35,7 +36,7 @@ class ToolSelectorWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => drawingProvider.setSelectedTool(tool),
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.primary : AppColors.cardBackground,
                         borderRadius: BorderRadius.circular(8),
@@ -46,21 +47,24 @@ class ToolSelectorWidget extends StatelessWidget {
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             tool.icon,
                             color: isSelected ? Colors.white : AppColors.textSecondary,
-                            size: tool.isEraser ? 20 : 18,
+                            size: 18,
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             tool.displayName,
                             style: TextStyle(
                               color: isSelected ? Colors.white : AppColors.textSecondary,
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
                             textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),

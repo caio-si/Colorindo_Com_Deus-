@@ -48,7 +48,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Material Design 3
 
 ##### Configurações
-- Seleção de idioma
+- Seleção de idiomas
 - Controle de sons
 - Controle de narração
 - Modo infantil com bloqueio parental
