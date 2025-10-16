@@ -30,10 +30,15 @@ class GalleryProvider extends ChangeNotifier {
           Map<String, dynamic>.from(data),
         );
         
-        if (progresso.finalizado) {
+        if (key.toString().startsWith('finalized_')) {
+          // Desenhos finalizados
           _desenhosFinalizados.add(progresso);
-        } else if (progresso.areasColoridas.isNotEmpty) {
-          _desenhosEmProgresso.add(progresso);
+        } else if (key.toString().startsWith('progress_')) {
+          // Desenhos em andamento (com progresso)
+          if (progresso.areasColoridas.isNotEmpty || 
+              (progresso.drawingLines != null && progresso.drawingLines!.lines.isNotEmpty)) {
+            _desenhosEmProgresso.add(progresso);
+          }
         }
       }
     }
@@ -62,7 +67,22 @@ class GalleryProvider extends ChangeNotifier {
 
   Future<void> excluirDesenho(String progressoId) async {
     await _galleryBox.delete(progressoId);
-    await _progressBox.delete('progress_$progressoId');
+    
+    // Buscar e deletar o progresso correspondente
+    final keys = _progressBox.keys.toList();
+    for (var key in keys) {
+      final data = _progressBox.get(key);
+      if (data != null) {
+        final progresso = ProgressoUsuario.fromJson(
+          Map<String, dynamic>.from(data),
+        );
+        if (progresso.id == progressoId) {
+          await _progressBox.delete(key);
+          break;
+        }
+      }
+    }
+    
     await carregarGaleria();
   }
 

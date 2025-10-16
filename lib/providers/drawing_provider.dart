@@ -120,6 +120,37 @@ class DrawingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> createNewDrawing(Desenho desenho) async {
+    _currentDesenho = desenho;
+    
+    // Limpar qualquer progresso existente
+    await _progressBox.delete('progress_${desenho.id}');
+    
+    // Criar novo progresso em branco
+    _currentProgress = ProgressoUsuario(
+      id: _uuid.v4(),
+      desenhoId: desenho.id,
+      areasColoridas: {},
+      dataModificacao: DateTime.now(),
+    );
+    
+    // Limpar todas as áreas do desenho
+    for (var area in desenho.areas) {
+      area.corPreenchida = null;
+    }
+    
+    // Limpar pilhas de undo/redo
+    _undoStack.clear();
+    _redoStack.clear();
+    
+    // Limpar linhas de desenho livre
+    _drawingLines.clear();
+    _undoLines.clear();
+    _redoLines.clear();
+    
+    notifyListeners();
+  }
+
   void colorirArea(String areaId) {
     // No modo livre, pinta diretamente
     _pintarArea(areaId);
@@ -239,12 +270,23 @@ class DrawingProvider extends ChangeNotifier {
   Future<void> finalizarDesenho() async {
     if (_currentProgress == null) return;
     
-    _currentProgress = _currentProgress!.copyWith(
+    // Criar uma nova versão finalizada com ID único
+    final finalizedProgress = _currentProgress!.copyWith(
+      id: _uuid.v4(), // Novo ID único para a versão finalizada
       finalizado: true,
       dataModificacao: DateTime.now(),
     );
     
-    await salvarProgresso();
+    // Salvar a versão finalizada
+    await _progressBox.put(
+      'finalized_${finalizedProgress.id}',
+      finalizedProgress.toJson(),
+    );
+    
+    // Remover o progresso em andamento para liberar o desenho para novos usos
+    await _progressBox.delete('progress_${_currentProgress!.desenhoId}');
+    
+    _currentProgress = finalizedProgress;
     notifyListeners();
   }
 

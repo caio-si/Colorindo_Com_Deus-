@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../utils/image_mapping.dart';
 import '../data/desenhos_data.dart';
 import '../models/desenho.dart';
+import '../providers/drawing_provider.dart';
 import 'coloring_screen.dart';
 
 class DrawingsSelectionScreen extends StatelessWidget {
@@ -45,16 +47,25 @@ class DrawingsSelectionScreen extends StatelessWidget {
             return _DrawingCard(
               desenho: desenhos[index],
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ColoringScreen(desenho: desenhos[index]),
-                  ),
-                );
+                _startNewDrawing(context, desenhos[index]);
               },
             );
           },
         ),
+      ),
+    );
+  }
+
+  void _startNewDrawing(BuildContext context, Desenho desenho) async {
+    final drawingProvider = Provider.of<DrawingProvider>(context, listen: false);
+    
+    // Limpar qualquer progresso existente para criar um novo desenho
+    await drawingProvider.createNewDrawing(desenho);
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ColoringScreen(desenho: desenho),
       ),
     );
   }
