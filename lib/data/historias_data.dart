@@ -9,7 +9,7 @@ class HistoriasData {
         titulo: 'A Criação do Mundo',
         descricao: 'No princípio, Deus criou o céu e a terra. Ele fez a luz, as estrelas, o sol e a lua. Criou as plantas, os animais e, por último, criou o homem e a mulher à sua imagem e semelhança.',
         imagemPath: ImageMapping.getStoryImagePath('1') ?? 'assets/images/stories/criacao.png',
-        referenciaBiblica: 'Gênesis 1-2',
+        referenciaBiblica: 'Gênesis1 -2',
         desenhoId: 'desenho_1',
       ),
       Historia(

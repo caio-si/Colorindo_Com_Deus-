@@ -9,6 +9,7 @@ import 'providers/settings_provider.dart';
 import 'providers/drawing_provider.dart';
 import 'providers/gallery_provider.dart';
 import 'screens/home_screen.dart';
+import 'screens/loading_screen.dart';
 import 'utils/app_colors.dart';
 import 'l10n/app_localizations.dart';
 
@@ -84,7 +85,12 @@ class ColorindoComDeusApp extends StatelessWidget {
             ],
             locale: settingsProvider.currentLocale,
             
-            home: const HomeScreen(),
+            // Rotas
+            initialRoute: '/loading',
+            routes: {
+              '/loading': (context) => const LoadingScreen(),
+              '/home': (context) => const HomeScreen(),
+            },
           );
         },
       ),

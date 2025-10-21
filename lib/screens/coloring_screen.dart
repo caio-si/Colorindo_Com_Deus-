@@ -7,8 +7,10 @@ import '../models/desenho.dart';
 import '../providers/drawing_provider.dart';
 import '../providers/gallery_provider.dart';
 import '../widgets/color_palette_widget.dart';
+import '../widgets/clay_color_palette_widget.dart';
 import '../widgets/free_drawing_canvas.dart';
 import '../widgets/tool_selector_widget.dart';
+import '../widgets/enhanced_tool_selector_widget.dart';
 
 class ColoringScreen extends StatefulWidget {
   final Desenho desenho;
@@ -152,7 +154,7 @@ class _ColoringScreenState extends State<ColoringScreen> {
                 ),
               ],
             ),
-            child: const ToolSelectorWidget(),
+            child: const EnhancedToolSelectorWidget(),
           ),
           
           // Paleta de Cores
@@ -168,7 +170,7 @@ class _ColoringScreenState extends State<ColoringScreen> {
                 ),
               ],
             ),
-            child: const ColorPaletteWidget(),
+            child: const ClayColorPaletteWidget(),
           ),
         ],
       ),
