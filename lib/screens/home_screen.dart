@@ -183,16 +183,24 @@ class HomeScreen extends StatelessWidget {
           ),
           child: ClipOval(
             child: Image.asset(
-              'icon/logo.png',
+              'assets/icon/logo.png',
               width: 320,
               height: 320,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
-                // Fallback caso a imagem não carregue
-                return Icon(
-                  Icons.brush,
-                  size: 60,
-                  color: AppColors.primary,
+                // Debug: mostrar erro
+                print('Erro ao carregar logo: $error');
+                return Container(
+                  width: 320,
+                  height: 320,
+                  color: Colors.red.withOpacity(0.3),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error, color: Colors.red, size: 40),
+                      Text('Logo não encontrado', style: TextStyle(color: Colors.red)),
+                    ],
+                  ),
                 );
               },
             ),

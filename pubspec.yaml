@@ -26,12 +26,11 @@ dependencies:
   hive_flutter: ^1.1.0
   
   # Imagens e Mídia
-  image_picker: ^1.0.5
-  image_gallery_saver: ^2.0.3
-  screenshot: ^2.1.0
+  # image_picker: ^1.0.5  # Removido - não usado
+  # screenshot: ^2.1.0    # Removido - não usado
   
   # Compartilhamento
-  share_plus: ^7.2.1
+  # share_plus: ^7.2.1  # Removido - não usado
   
   # Internacionalização
   flutter_localizations:
@@ -72,8 +71,8 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  ios: true
-  image_path: "assets/icon/icon.png"
+  ios: false
+  image_path: "assets/icon/playstore.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  adaptive_icon_foreground: "assets/icon/playstore.png"
 
