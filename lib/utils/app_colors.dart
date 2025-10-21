@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Cores Primárias
-  static const Color primary = Color(0xFF6C63FF);
-  static const Color secondary = Color(0xFFFF6584);
-  static const Color accent = Color(0xFFFFD93D);
+  // 🎨 Cores Divinas/Celestiais (Tema "Deus")
+  
+  // Azul Celestial - representa o céu e o divino
+  static const Color primary = Color(0xFF4A90E2); // Azul celestial
+  
+  // Dourado Real - representa a glória e santidade
+  static const Color secondary = Color(0xFFDAA520); // Dourado real
+  
+  // Roxo Real - representa realeza e espiritualidade
+  static const Color accent = Color(0xFF9B59B6); // Roxo real/ametista
+  
+  // Verde Esperança - representa vida e esperança
+  static const Color success = Color(0xFF27AE60); // Verde esperança
+  
+  // Azul Cristalino - representa pureza e paz
+  static const Color info = Color(0xFF3498DB); // Azul cristalino
   
   // Cores de Fundo
-  static const Color background = Color(0xFFF8F9FF);
+  static const Color background = Color(0xFFFAFAFA); // Branco puro suave
   static const Color cardBackground = Colors.white;
   
   // Cores de Texto
-  static const Color textPrimary = Color(0xFF2D3142);
-  static const Color textSecondary = Color(0xFF6C757D);
+  static const Color textPrimary = Color(0xFF2C3E50); // Azul escuro suave
+  static const Color textSecondary = Color(0xFF7F8C8D); // Cinza celestial
   
   // Cores para Pintura (Paleta de Cores Expandida)
   static const List<Color> paintColors = [
@@ -60,10 +72,8 @@ class AppColors {
   ];
   
   // Cores de Status
-  static const Color success = Color(0xFF28A745);
-  static const Color warning = Color(0xFFFFC107);
-  static const Color error = Color(0xFFDC3545);
-  static const Color info = Color(0xFF17A2B8);
+  static const Color warning = Color(0xFFF39C12); // Laranja divino
+  static const Color error = Color(0xFFE74C3C); // Vermelho suave
   
   // Cores de Medalhas
   static const Color goldMedal = Color(0xFFFFD700);

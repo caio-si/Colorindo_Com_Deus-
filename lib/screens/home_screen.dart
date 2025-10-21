@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../widgets/animated_button.dart';
@@ -20,23 +21,47 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.white,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                
-                // Logo e Título
-                _buildHeader(context, l10n),
+        decoration: BoxDecoration(
+          // Gradiente celestial (céu divino)
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE3F2FD), // Azul céu claro
+              Color(0xFFF3E5F5), // Roxo claro celestial
+              Color(0xFFE8F5E8), // Verde claro esperança
+              Colors.white, // Branco puro
+            ],
+            stops: [0.0, 0.3, 0.7, 1.0],
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Efeito de estrelas/padrão sutil
+            Positioned.fill(
+              child: CustomPaint(
+                painter: CelestialBackgroundPainter(),
+              ),
+            ),
+            
+            // Conteúdo principal
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    
+                    // Logo e Título
+                    _buildHeader(context, l10n),
                 
                 const SizedBox(height: 60),
                 
                 // Botões de Navegação
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
+                      // Botão Começar a Colorir - Azul Celestial
                       AnimatedButton(
                         text: l10n.startColoring,
                         icon: Icons.palette,
@@ -52,6 +77,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       
+                      // Botão Histórias Bíblicas - Dourado Real
                       AnimatedButton(
                         text: l10n.stories,
                         icon: Icons.menu_book,
@@ -67,6 +93,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       
+                      // Botão Galeria - Roxo Real
                       AnimatedButton(
                         text: l10n.gallery,
                         icon: Icons.photo_library,
@@ -84,6 +111,7 @@ class HomeScreen extends StatelessWidget {
                       
                       Row(
                         children: [
+                          // Botão Configurações - Azul Cristalino
                           Expanded(
                             child: AnimatedButton(
                               text: l10n.settings,
@@ -99,7 +127,8 @@ class HomeScreen extends StatelessWidget {
                               },
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 12),
+                          // Botão Sobre - Verde Esperança
                           Expanded(
                             child: AnimatedButton(
                               text: l10n.about,
@@ -122,9 +151,11 @@ class HomeScreen extends StatelessWidget {
                 ),
                 
                 const SizedBox(height: 40),
-              ],
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -135,25 +166,25 @@ class HomeScreen extends StatelessWidget {
       children: [
         // Logo personalizada
         Container(
-          width: 280,
-          height: 280,
+          width: 320,
+          height: 320,
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                blurRadius: 25,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
           child: ClipOval(
             child: Image.asset(
               'icon/logo.png',
-              width: 280,
-              height: 280,
-              fit: BoxFit.cover,
+              width: 320,
+              height: 320,
+              fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 // Fallback caso a imagem não carregue
                 return Icon(
@@ -180,5 +211,83 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+// 🎨 Pintor para fundo celestial
+class CelestialBackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Estrelas pequenas - mais visíveis
+    final starPaint = Paint()
+      ..color = Colors.white.withOpacity(0.8)
+      ..style = PaintingStyle.fill;
+
+    // Estrelas maiores - mais brilhantes
+    final bigStarPaint = Paint()
+      ..color = Colors.white.withOpacity(0.9)
+      ..style = PaintingStyle.fill;
+
+    // Estrelas douradas para contraste
+    final goldStarPaint = Paint()
+      ..color = Color(0xFFFFD700).withOpacity(0.7)
+      ..style = PaintingStyle.fill;
+
+    // Estrelas pequenas
+    _drawStar(canvas, starPaint, size.width * 0.2, size.height * 0.15, 4);
+    _drawStar(canvas, starPaint, size.width * 0.8, size.height * 0.25, 3);
+    _drawStar(canvas, starPaint, size.width * 0.1, size.height * 0.4, 3.5);
+    _drawStar(canvas, starPaint, size.width * 0.9, size.height * 0.5, 4);
+    _drawStar(canvas, starPaint, size.width * 0.3, size.height * 0.7, 3);
+    _drawStar(canvas, starPaint, size.width * 0.7, size.height * 0.8, 3.5);
+
+    // Estrelas maiores (mais brilhantes)
+    _drawStar(canvas, bigStarPaint, size.width * 0.15, size.height * 0.1, 6);
+    _drawStar(canvas, bigStarPaint, size.width * 0.85, size.height * 0.2, 5);
+    _drawStar(canvas, bigStarPaint, size.width * 0.5, size.height * 0.3, 7);
+    _drawStar(canvas, bigStarPaint, size.width * 0.25, size.height * 0.6, 5);
+    _drawStar(canvas, bigStarPaint, size.width * 0.75, size.height * 0.9, 6);
+
+    // Estrelas douradas especiais
+    _drawStar(canvas, goldStarPaint, size.width * 0.4, size.height * 0.2, 5);
+    _drawStar(canvas, goldStarPaint, size.width * 0.6, size.height * 0.4, 4);
+    _drawStar(canvas, goldStarPaint, size.width * 0.2, size.height * 0.8, 4.5);
+
+    // Efeito de brilho suave no centro - mais visível
+    final glowPaint = Paint()
+      ..color = Colors.white.withOpacity(0.2)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.3),
+      size.width * 0.4,
+      glowPaint,
+    );
+  }
+
+  void _drawStar(Canvas canvas, Paint paint, double x, double y, double size) {
+    final path = Path();
+    final spikes = 5;
+    final outerRadius = size;
+    final innerRadius = size * 0.4;
+
+    for (int i = 0; i < spikes * 2; i++) {
+      final angle = (i * math.pi) / spikes;
+      final radius = i.isEven ? outerRadius : innerRadius;
+      final dx = x + radius * math.cos(angle - math.pi / 2);
+      final dy = y + radius * math.sin(angle - math.pi / 2);
+      
+      if (i == 0) {
+        path.moveTo(dx, dy);
+      } else {
+        path.lineTo(dx, dy);
+      }
+    }
+    path.close();
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
