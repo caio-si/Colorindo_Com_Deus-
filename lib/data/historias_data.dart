@@ -1,53 +1,54 @@
 import '../models/historia.dart';
 import '../utils/image_mapping.dart';
+import '../l10n/app_localizations.dart';
 
 class HistoriasData {
-  static List<Historia> obterHistorias() {
+  static List<Historia> obterHistorias([AppLocalizations? l10n]) {
     return [
       Historia(
         id: '1',
-        titulo: 'A Criação do Mundo',
-        descricao: 'No princípio, Deus criou o céu e a terra. Ele fez a luz, as estrelas, o sol e a lua. Criou as plantas, os animais e, por último, criou o homem e a mulher à sua imagem e semelhança.',
+        titulo: l10n?.storyCreationTitle ?? 'A Criação do Mundo',
+        descricao: l10n?.storyCreationDesc ?? 'No princípio, Deus criou o céu e a terra. Ele fez a luz, as estrelas, o sol e a lua. Criou as plantas, os animais e, por último, criou o homem e a mulher à sua imagem e semelhança.',
         imagemPath: ImageMapping.getStoryImagePath('1') ?? 'assets/images/stories/criacao.png',
         referenciaBiblica: 'Gênesis1 -2',
         desenhoId: 'desenho_1',
       ),
       Historia(
         id: '2',
-        titulo: 'Noé e a Arca',
-        descricao: 'Deus pediu a Noé para construir uma grande arca porque viria um dilúvio. Noé obedeceu e colocou sua família e um casal de cada animal dentro da arca. Depois da chuva, um lindo arco-íris apareceu no céu.',
+        titulo: l10n?.storyNoahTitle ?? 'Noé e a Arca',
+        descricao: l10n?.storyNoahDesc ?? 'Deus pediu a Noé para construir uma grande arca porque viria um dilúvio. Noé obedeceu e colocou sua família e um casal de cada animal dentro da arca. Depois da chuva, um lindo arco-íris apareceu no céu.',
         imagemPath: ImageMapping.getStoryImagePath('2') ?? 'assets/images/stories/noe.png',
         referenciaBiblica: 'Gênesis 6-9',
         desenhoId: 'desenho_2',
       ),
       Historia(
         id: '3',
-        titulo: 'Davi e Golias',
-        descricao: 'Davi era um jovem pastor que confiava em Deus. Quando o gigante Golias desafiou o povo de Deus, Davi enfrentou-o apenas com uma funda e cinco pedras. Com a ajuda de Deus, venceu o gigante.',
+        titulo: l10n?.storyDavidTitle ?? 'Davi e Golias',
+        descricao: l10n?.storyDavidDesc ?? 'Davi era um jovem pastor que confiava em Deus. Quando o gigante Golias desafiou o povo de Deus, Davi enfrentou-o apenas com uma funda e cinco pedras. Com a ajuda de Deus, venceu o gigante.',
         imagemPath: ImageMapping.getStoryImagePath('3') ?? 'assets/images/stories/davi_golias.png',
         referenciaBiblica: '1 Samuel 17',
         desenhoId: 'desenho_3',
       ),
       Historia(
         id: '4',
-        titulo: 'Jonas e o Grande Peixe',
-        descricao: 'Deus pediu a Jonas para ir a Nínive, mas ele fugiu de barco. Houve uma tempestade e Jonas foi engolido por um grande peixe. Dentro do peixe, Jonas orou a Deus e foi perdoado. O peixe o vomitou na praia.',
+        titulo: l10n?.storyJonahTitle ?? 'Jonas e o Grande Peixe',
+        descricao: l10n?.storyJonahDesc ?? 'Deus pediu a Jonas para ir a Nínive, mas ele fugiu de barco. Houve uma tempestade e Jonas foi engolido por um grande peixe. Dentro do peixe, Jonas orou a Deus e foi perdoado. O peixe o vomitou na praia.',
         imagemPath: ImageMapping.getStoryImagePath('4') ?? 'assets/images/stories/jonas.png',
         referenciaBiblica: 'Jonas 1-4',
         desenhoId: 'desenho_4',
       ),
       Historia(
         id: '5',
-        titulo: 'Daniel na Cova dos Leões',
-        descricao: 'Daniel orava a Deus todos os dias. Por isso, foi jogado em uma cova cheia de leões famintos. Mas Deus enviou um anjo que fechou a boca dos leões, e Daniel ficou em segurança a noite toda.',
+        titulo: l10n?.storyDanielTitle ?? 'Daniel na Cova dos Leões',
+        descricao: l10n?.storyDanielDesc ?? 'Daniel orava a Deus todos os dias. Por isso, foi jogado em uma cova cheia de leões famintos. Mas Deus enviou um anjo que fechou a boca dos leões, e Daniel ficou em segurança a noite toda.',
         imagemPath: ImageMapping.getStoryImagePath('5') ?? 'assets/images/stories/daniel.png',
         referenciaBiblica: 'Daniel 6',
         desenhoId: 'desenho_5',
       ),
       Historia(
         id: '6',
-        titulo: 'O Nascimento de Jesus',
-        descricao: 'Maria e José foram a Belém. Lá, Jesus nasceu em uma manjedoura. Anjos apareceram aos pastores anunciando a boa notícia. Reis magos vieram de longe trazendo presentes para o menino Jesus.',
+        titulo: l10n?.storyJesusTitle ?? 'O Nascimento de Jesus',
+        descricao: l10n?.storyJesusDesc ?? 'Maria e José foram a Belém. Lá, Jesus nasceu em uma manjedoura. Anjos apareceram aos pastores anunciando a boa notícia. Reis magos vieram de longe trazendo presentes para o menino Jesus.',
         imagemPath: ImageMapping.getStoryImagePath('6') ?? 'assets/images/stories/nascimento_jesus.png',
         referenciaBiblica: 'Lucas 2',
         desenhoId: 'desenho_6',

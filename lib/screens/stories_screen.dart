@@ -17,7 +17,7 @@ class StoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final historias = HistoriasData.obterHistorias();
+    final historias = HistoriasData.obterHistorias(l10n);
 
     return Scaffold(
       appBar: AppBar(

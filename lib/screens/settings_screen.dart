@@ -64,18 +64,18 @@ class SettingsScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              'Áudio',
+              l10n.audio, // Usando tradução para "Áudio"
               [
                 SwitchListTile(
                   title: Text(l10n.sounds),
-                  subtitle: const Text('Efeitos sonoros ao pintar'),
+                  subtitle: Text(l10n.soundsSubtitle),
                   value: settingsProvider.soundsEnabled,
                   onChanged: (_) => settingsProvider.toggleSounds(),
                   activeColor: AppColors.primary,
                 ),
                 SwitchListTile(
                   title: Text(l10n.narration),
-                  subtitle: const Text('Narração das histórias'),
+                  subtitle: Text(l10n.narrationSubtitle),
                   value: settingsProvider.narrationEnabled,
                   onChanged: (_) => settingsProvider.toggleNarration(),
                   activeColor: AppColors.primary,
@@ -87,11 +87,11 @@ class SettingsScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              'Aparência',
+              l10n.appearance,
               [
                 SwitchListTile(
                   title: Text(l10n.darkMode),
-                  subtitle: const Text('Tema escuro'),
+                  subtitle: Text(l10n.darkModeSubtitle),
                   value: themeProvider.themeMode == ThemeMode.dark,
                   onChanged: (_) => themeProvider.toggleTheme(),
                   activeColor: AppColors.primary,
@@ -104,11 +104,11 @@ class SettingsScreen extends StatelessWidget {
             
             _buildSection(
               context,
-              'Armazenamento',
+              l10n.storage,
               [
                 ListTile(
                   title: Text(l10n.clearStorage),
-                  subtitle: const Text('Apagar todos os desenhos salvos'),
+                  subtitle: Text(l10n.clearStorageSubtitle),
                   leading: const Icon(Icons.delete_forever, color: Colors.red),
                   onTap: () => _showClearStorageDialog(context, settingsProvider, l10n),
                 ),
