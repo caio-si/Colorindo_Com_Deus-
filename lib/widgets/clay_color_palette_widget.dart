@@ -16,23 +16,17 @@ class _ClayColorPaletteWidgetState extends State<ClayColorPaletteWidget> {
     return Consumer<DrawingProvider>(
       builder: (context, drawingProvider, child) {
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(4),
           constraints: const BoxConstraints(maxWidth: 400),
           decoration: BoxDecoration(
             color: const Color(0xFFF0F0F0), // Cor de fundo clay
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(15),
             boxShadow: const [
               // Sombra externa para efeito clay
               BoxShadow(
                 color: Color(0xFFD0D0D0),
-                offset: Offset(4, 4),
-                blurRadius: 8,
-              ),
-              // Sombra clara para destaque
-              BoxShadow(
-                color: Colors.white,
-                offset: Offset(-4, -4),
-                blurRadius: 8,
+                offset: Offset(1, 1),
+                blurRadius: 2,
               ),
             ],
           ),
@@ -46,8 +40,8 @@ class _ClayColorPaletteWidgetState extends State<ClayColorPaletteWidget> {
                 scrollDirection: Axis.vertical,
                 child: Wrap(
                   alignment: WrapAlignment.center,
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 4,
+                  runSpacing: 4,
                   children: AppColors.paintColors.map((color) {
                     return _ClayColorBubble(
                       color: color,
@@ -119,11 +113,11 @@ class _ClayColorBubbleState extends State<_ClayColorBubble>
           return Transform.scale(
             scale: _scaleAnim.value,
             child: Container(
-              width: 42,
-              height: 42,
+              width: 34,
+              height: 34,
               decoration: BoxDecoration(
                 color: widget.color,
-                borderRadius: BorderRadius.circular(21),
+                borderRadius: BorderRadius.circular(17),
                 border: Border.all(
                   color: widget.isSelected 
                       ? Colors.white.withOpacity(0.8)
@@ -162,7 +156,7 @@ class _ClayColorBubbleState extends State<_ClayColorBubble>
               child: widget.isSelected
                   ? Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(21),
+                        borderRadius: BorderRadius.circular(17),
                         border: Border.all(
                           color: Colors.white.withOpacity(0.9),
                           width: 2,

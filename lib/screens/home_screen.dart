@@ -64,7 +64,8 @@ class HomeScreen extends StatelessWidget {
                       // Botão Começar a Colorir - Azul Celestial
                       AnimatedButton(
                         text: l10n.startColoring,
-                        icon: Icons.palette,
+                        icon: null, // Removido ícone padrão
+                        customIcon: 'assets/icon/Paleta.png', // Ícone personalizado
                         color: AppColors.primary,
                         onTap: () {
                           Navigator.push(
@@ -80,7 +81,8 @@ class HomeScreen extends StatelessWidget {
                       // Botão Histórias Bíblicas - Dourado Real
                       AnimatedButton(
                         text: l10n.stories,
-                        icon: Icons.menu_book,
+                        icon: null, // Removido ícone padrão
+                        customIcon: 'assets/icon/Biblia.png', // Ícone personalizado
                         color: AppColors.secondary,
                         onTap: () {
                           Navigator.push(

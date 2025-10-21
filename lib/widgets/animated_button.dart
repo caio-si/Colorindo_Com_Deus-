@@ -3,14 +3,16 @@ import 'dart:math' as math;
 
 class AnimatedButton extends StatefulWidget {
   final String text;
-  final IconData icon;
+  final IconData? icon;
+  final String? customIcon;
   final Color color;
   final VoidCallback onTap;
 
   const AnimatedButton({
     super.key,
     required this.text,
-    required this.icon,
+    this.icon,
+    this.customIcon,
     required this.color,
     required this.onTap,
   });
@@ -142,25 +144,33 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // Ícone com brilho
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(_isHovering ? 0.25 : 0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                widget.icon,
-                                color: Colors.white,
-                                size: 24,
-                                shadows: const [
-                                  Shadow(
-                                    color: Colors.black26,
-                                    blurRadius: 8,
-                                    offset: Offset(0, 2),
+                            // Ícone sem fundo circular
+                            widget.customIcon != null
+                                ? Image.asset(
+                                    widget.customIcon!,
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Icon(
+                                        Icons.palette,
+                                        color: Colors.white,
+                                        size: 60,
+                                      );
+                                    },
+                                  )
+                                : Icon(
+                                    widget.icon!,
+                                    color: Colors.white,
+                                    size: 40,
+                                    shadows: const [
+                                      Shadow(
+                                        color: Colors.black26,
+                                        blurRadius: 8,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
                             const SizedBox(width: 12),
                             
                             // Texto com sombra dourada
