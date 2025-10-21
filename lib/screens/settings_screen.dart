@@ -67,17 +67,10 @@ class SettingsScreen extends StatelessWidget {
               l10n.audio, // Usando tradução para "Áudio"
               [
                 SwitchListTile(
-                  title: Text(l10n.sounds),
-                  subtitle: Text(l10n.soundsSubtitle),
-                  value: settingsProvider.soundsEnabled,
-                  onChanged: (_) => settingsProvider.toggleSounds(),
-                  activeColor: AppColors.primary,
-                ),
-                SwitchListTile(
-                  title: Text(l10n.narration),
-                  subtitle: Text(l10n.narrationSubtitle),
-                  value: settingsProvider.narrationEnabled,
-                  onChanged: (_) => settingsProvider.toggleNarration(),
+                  title: Text(l10n.backgroundMusic),
+                  subtitle: Text(l10n.backgroundMusicSubtitle),
+                  value: settingsProvider.backgroundMusicEnabled,
+                  onChanged: (_) => settingsProvider.toggleBackgroundMusic(),
                   activeColor: AppColors.primary,
                 ),
               ],
