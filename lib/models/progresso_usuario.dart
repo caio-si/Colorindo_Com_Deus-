@@ -30,13 +30,15 @@ class ProgressoUsuario {
 
   factory ProgressoUsuario.fromJson(Map<String, dynamic> json) {
     return ProgressoUsuario(
-      id: json['id'],
-      desenhoId: json['desenhoId'],
-      areasColoridas: Map<String, int>.from(json['areasColoridas']),
-      dataModificacao: DateTime.parse(json['dataModificacao']),
-      finalizado: json['finalizado'] ?? false,
+      id: json['id']?.toString() ?? '',
+      desenhoId: json['desenhoId']?.toString() ?? '',
+      areasColoridas: json['areasColoridas'] != null 
+          ? Map<String, int>.from(json['areasColoridas'].map((k, v) => MapEntry(k.toString(), v is int ? v : int.tryParse(v.toString()) ?? 0)))
+          : <String, int>{},
+      dataModificacao: DateTime.parse(json['dataModificacao']?.toString() ?? DateTime.now().toIso8601String()),
+      finalizado: json['finalizado'] == true || json['finalizado'] == 'true',
       drawingLines: json['drawingLines'] != null 
-          ? DrawingLines.fromJson(json['drawingLines']) 
+          ? DrawingLines.fromJson(Map<String, dynamic>.from(json['drawingLines']))
           : null,
     );
   }

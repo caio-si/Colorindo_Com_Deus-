@@ -22,21 +22,22 @@ class DrawingLines {
   }
 
   factory DrawingLines.fromJson(Map<String, dynamic> json) {
-    final linesData = json['lines'] as List;
+    final linesData = json['lines'] as List? ?? [];
     final lines = linesData.map((lineData) {
       return (lineData as List).map((pointData) {
+        final pointMap = Map<String, dynamic>.from(pointData);
         return DrawingPoint(
-          position: pointData['x'] != null && pointData['y'] != null
-              ? Offset(pointData['x'].toDouble(), pointData['y'].toDouble())
+          position: pointMap['x'] != null && pointMap['y'] != null
+              ? Offset(pointMap['x'].toDouble(), pointMap['y'].toDouble())
               : null,
-          color: pointData['color'] != null 
-              ? Color(pointData['color']) 
+          color: pointMap['color'] != null 
+              ? Color(pointMap['color'] is int ? pointMap['color'] : int.tryParse(pointMap['color'].toString()) ?? 0)
               : null,
           tool: PaintingTool.values.firstWhere(
-            (t) => t.name == pointData['tool'],
+            (t) => t.name == pointMap['tool']?.toString(),
             orElse: () => PaintingTool.mediumBrush,
           ),
-          brushSize: pointData['brushSize']?.toDouble() ?? 8.0,
+          brushSize: (pointMap['brushSize'] is double ? pointMap['brushSize'] : double.tryParse(pointMap['brushSize'].toString()) ?? 8.0),
         );
       }).toList();
     }).toList();

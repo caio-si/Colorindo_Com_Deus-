@@ -4,7 +4,11 @@ import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../providers/gallery_provider.dart';
 import '../models/progresso_usuario.dart';
+import '../models/drawing_lines.dart';
 import '../data/desenhos_data.dart';
+import '../utils/image_mapping.dart';
+import '../widgets/free_drawing_canvas.dart';
+import '../utils/painting_tools.dart';
 import 'coloring_screen.dart';
 
 class GalleryScreen extends StatefulWidget {
@@ -174,13 +178,7 @@ class _GalleryItem extends StatelessWidget {
                     top: Radius.circular(20),
                   ),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.image,
-                    size: 60,
-                    color: AppColors.accent.withOpacity(0.3),
-                  ),
-                ),
+                child: _buildDrawingPreview(),
               ),
             ),
             Padding(
@@ -217,6 +215,86 @@ class _GalleryItem extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  Widget _buildDrawingPreview() {
+    // Debug: verificar se há linhas de desenho
+    print('DEBUG: progresso.drawingLines: ${progresso.drawingLines}');
+    if (progresso.drawingLines != null) {
+      print('DEBUG: drawingLines.lines.length: ${progresso.drawingLines!.lines.length}');
+      if (progresso.drawingLines!.lines.isNotEmpty) {
+        print('DEBUG: Primeira linha tem ${progresso.drawingLines!.lines.first.length} pontos');
+      }
+    }
+    
+    // Buscar o desenho base
+    final desenhos = DesenhosData.obterDesenhos();
+    final desenho = desenhos.firstWhere(
+      (d) => d.id == progresso.desenhoId,
+      orElse: () => desenhos.first,
+    );
+    
+    // Obter o caminho correto da imagem usando o historiaId
+    final imagePath = ImageMapping.getDrawingImagePath(desenho.historiaId) ?? desenho.imagemPath;
+    
+    // Se há linhas de desenho livre, mostrar a prévia com imagem base
+    if (progresso.drawingLines != null && progresso.drawingLines!.lines.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              // Imagem base do desenho
+              Positioned.fill(
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Icon(
+                        Icons.image,
+                        color: Colors.grey[400],
+                        size: 40,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Rabiscos sobrepostos
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _DrawingPreviewPainter(progresso.drawingLines!),
+                  size: Size.infinite,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    
+    // Se não há linhas de desenho, mostrar apenas a imagem base
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: Icon(
+                Icons.image,
+                size: 60,
+                color: AppColors.accent.withOpacity(0.3),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   void _recolorirDesenho(BuildContext context, ProgressoUsuario progresso) async {
@@ -278,6 +356,113 @@ class _GalleryItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _DrawingPreviewPainter extends CustomPainter {
+  final DrawingLines drawingLines;
+
+  _DrawingPreviewPainter(this.drawingLines);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    print('DEBUG: _DrawingPreviewPainter.paint - size: $size');
+    print('DEBUG: drawingLines.lines.length: ${drawingLines.lines.length}');
+    
+    if (drawingLines.lines.isEmpty) {
+      print('DEBUG: No lines to draw');
+      return;
+    }
+
+    // Calcular os limites do desenho
+    double minX = double.infinity;
+    double maxX = -double.infinity;
+    double minY = double.infinity;
+    double maxY = -double.infinity;
+
+    for (final line in drawingLines.lines) {
+      for (final point in line) {
+        if (point.position != null) {
+          minX = minX < point.position!.dx ? minX : point.position!.dx;
+          maxX = maxX > point.position!.dx ? maxX : point.position!.dx;
+          minY = minY < point.position!.dy ? minY : point.position!.dy;
+          maxY = maxY > point.position!.dy ? maxY : point.position!.dy;
+        }
+      }
+    }
+
+    print('DEBUG: Bounds - minX: $minX, maxX: $maxX, minY: $minY, maxY: $maxY');
+
+    if (minX == double.infinity) {
+      print('DEBUG: No valid positions found');
+      return;
+    }
+
+    // Calcular dimensões do desenho
+    final drawingWidth = maxX - minX;
+    final drawingHeight = maxY - minY;
+    
+    print('DEBUG: Drawing dimensions - width: $drawingWidth, height: $drawingHeight');
+    
+    if (drawingWidth <= 0 || drawingHeight <= 0) {
+      print('DEBUG: Invalid drawing dimensions');
+      return;
+    }
+
+    // Calcular escala para ajustar ao tamanho da prévia
+    final scaleX = (size.width - 32) / drawingWidth; // 32px de padding
+    final scaleY = (size.height - 32) / drawingHeight;
+    final scale = (scaleX < scaleY ? scaleX : scaleY) * 0.9; // 90% do tamanho disponível
+
+    print('DEBUG: Scale - scaleX: $scaleX, scaleY: $scaleY, final scale: $scale');
+
+    // Calcular offset para centralizar
+    final offsetX = (size.width - drawingWidth * scale) / 2;
+    final offsetY = (size.height - drawingHeight * scale) / 2;
+
+    print('DEBUG: Offset - offsetX: $offsetX, offsetY: $offsetY');
+
+    // Aplicar transformações
+    canvas.save();
+    canvas.translate(offsetX - minX * scale, offsetY - minY * scale);
+    canvas.scale(scale);
+
+    // Desenhar cada linha
+    for (int lineIndex = 0; lineIndex < drawingLines.lines.length; lineIndex++) {
+      final line = drawingLines.lines[lineIndex];
+      if (line.isEmpty) continue;
+
+      print('DEBUG: Drawing line $lineIndex with ${line.length} points');
+
+      final paint = Paint()
+        ..color = line.first.color ?? Colors.black
+        ..strokeWidth = (line.first.brushSize ?? 8.0) * 0.5 / scale // Ajustar tamanho baseado na escala
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke;
+
+      // Desenhar pontos conectados
+      for (int i = 0; i < line.length - 1; i++) {
+        final current = line[i];
+        final next = line[i + 1];
+        
+        if (current.position != null && next.position != null) {
+          canvas.drawLine(
+            current.position!,
+            next.position!,
+            paint,
+          );
+        }
+      }
+    }
+
+    canvas.restore();
+    print('DEBUG: Finished drawing');
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return oldDelegate is _DrawingPreviewPainter && 
+           oldDelegate.drawingLines != drawingLines;
   }
 }
 
