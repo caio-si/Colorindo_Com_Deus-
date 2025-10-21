@@ -19,6 +19,7 @@ class DrawingProvider extends ChangeNotifier {
   String? _selectedAreaId;
   PaintingTool _selectedTool = PaintingTool.mediumBrush;
   bool _isMoveMode = false; // false = modo pintura, true = modo movimento
+  double _eraserSize = 15.0; // Tamanho da borracha
   
   final List<Map<String, int>> _undoStack = [];
   final List<Map<String, int>> _redoStack = [];
@@ -35,6 +36,7 @@ class DrawingProvider extends ChangeNotifier {
   String? get selectedAreaId => _selectedAreaId;
   PaintingTool get selectedTool => _selectedTool;
   bool get isMoveMode => _isMoveMode;
+  double get eraserSize => _eraserSize;
   bool get canUndo => _undoLines.isNotEmpty;
   bool get canRedo => _redoLines.isNotEmpty;
   
@@ -59,6 +61,11 @@ class DrawingProvider extends ChangeNotifier {
 
   void toggleMoveMode() {
     _isMoveMode = !_isMoveMode;
+    notifyListeners();
+  }
+  
+  void setEraserSize(double size) {
+    _eraserSize = size;
     notifyListeners();
   }
 

@@ -79,7 +79,9 @@ class FreeDrawingCanvasState extends State<FreeDrawingCanvas> {
                          ? Colors.transparent 
                          : drawingProvider.selectedColor,
                        tool: drawingProvider.selectedTool,
-                       brushSize: drawingProvider.selectedTool.brushSize,
+                       brushSize: drawingProvider.selectedTool == PaintingTool.eraser 
+                           ? drawingProvider.eraserSize 
+                           : drawingProvider.selectedTool.brushSize,
                      ),
                    ];
                    
@@ -100,7 +102,9 @@ class FreeDrawingCanvasState extends State<FreeDrawingCanvas> {
                        ? Colors.transparent 
                        : drawingProvider.selectedColor,
                      tool: drawingProvider.selectedTool,
-                     brushSize: drawingProvider.selectedTool.brushSize,
+                     brushSize: drawingProvider.selectedTool == PaintingTool.eraser 
+                         ? drawingProvider.eraserSize 
+                         : drawingProvider.selectedTool.brushSize,
                    );
                    _currentLine.add(newPoint);
                    

@@ -11,6 +11,7 @@ import '../widgets/clay_color_palette_widget.dart';
 import '../widgets/free_drawing_canvas.dart';
 import '../widgets/tool_selector_widget.dart';
 import '../widgets/enhanced_tool_selector_widget.dart';
+import '../widgets/modern_tool_selector_widget.dart';
 
 class ColoringScreen extends StatefulWidget {
   final Desenho desenho;
@@ -112,38 +113,9 @@ class _ColoringScreenState extends State<ColoringScreen> {
                    ),
                  ),
           
-                 // Barra de informações
-                 Container(
-                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                   color: AppColors.background,
-                   child: Row(
-                     children: [
-                       Icon(
-                         drawingProvider.isMoveMode ? Icons.pan_tool : Icons.brush,
-                         color: drawingProvider.isMoveMode ? AppColors.textSecondary : AppColors.primary,
-                         size: 20,
-                       ),
-                       const SizedBox(width: 8),
-                       Expanded(
-                         child: Text(
-                           drawingProvider.isMoveMode 
-                             ? 'Modo Movimento - Arraste para mover e use dois dedos para zoom'
-                             : 'Modo Pintura - Arraste para pintar',
-                           style: TextStyle(
-                             color: drawingProvider.isMoveMode ? AppColors.textSecondary : AppColors.primary,
-                             fontSize: 12,
-                             fontWeight: FontWeight.bold,
-                           ),
-                         ),
-                       ),
-                       if (drawingProvider.isMoveMode)
-                         Icon(Icons.zoom_in, color: AppColors.primary, size: 16),
-                     ],
-                   ),
-                 ),
-          
           // Seletor de Ferramentas
           Container(
+            margin: const EdgeInsets.only(top: 8), // Subiu um pouco mais
             decoration: BoxDecoration(
               color: AppColors.cardBackground,
               boxShadow: [
@@ -154,7 +126,7 @@ class _ColoringScreenState extends State<ColoringScreen> {
                 ),
               ],
             ),
-            child: const EnhancedToolSelectorWidget(),
+            child: const ModernToolSelectorWidget(),
           ),
           
           // Paleta de Cores
@@ -171,6 +143,36 @@ class _ColoringScreenState extends State<ColoringScreen> {
               ],
             ),
             child: const ClayColorPaletteWidget(),
+          ),
+          
+          // Barra de informações
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: AppColors.background,
+            child: Row(
+              children: [
+                Icon(
+                  drawingProvider.isMoveMode ? Icons.pan_tool : Icons.brush,
+                  color: drawingProvider.isMoveMode ? AppColors.textSecondary : AppColors.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    drawingProvider.isMoveMode 
+                      ? 'Modo Movimento - Arraste para mover e use dois dedos para zoom'
+                      : 'Modo Pintura - Arraste para pintar',
+                    style: TextStyle(
+                      color: drawingProvider.isMoveMode ? AppColors.textSecondary : AppColors.primary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (drawingProvider.isMoveMode)
+                  Icon(Icons.zoom_in, color: AppColors.primary, size: 16),
+              ],
+            ),
           ),
         ],
       ),
