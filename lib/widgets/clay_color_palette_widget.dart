@@ -11,6 +11,14 @@ class ClayColorPaletteWidget extends StatefulWidget {
 }
 
 class _ClayColorPaletteWidgetState extends State<ClayColorPaletteWidget> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DrawingProvider>(
@@ -33,10 +41,12 @@ class _ClayColorPaletteWidgetState extends State<ClayColorPaletteWidget> {
           child: SizedBox(
             height: 200, // Altura fixa para permitir scroll
             child: Scrollbar(
+              controller: _scrollController,
               thumbVisibility: true, // Scrollbar sempre visível
               thickness: 8, // Espessura da scrollbar
               radius: const Radius.circular(4),
               child: SingleChildScrollView(
+                controller: _scrollController,
                 scrollDirection: Axis.vertical,
                 child: Wrap(
                   alignment: WrapAlignment.center,

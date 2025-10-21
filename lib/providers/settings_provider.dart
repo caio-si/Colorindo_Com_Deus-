@@ -7,6 +7,7 @@ class SettingsProvider extends ChangeNotifier {
   late Locale _currentLocale;
   late bool _soundsEnabled;
   late bool _narrationEnabled;
+  late bool _backgroundMusicEnabled;
   late bool _childMode;
 
   SettingsProvider() {
@@ -16,6 +17,7 @@ class SettingsProvider extends ChangeNotifier {
   Locale get currentLocale => _currentLocale;
   bool get soundsEnabled => _soundsEnabled;
   bool get narrationEnabled => _narrationEnabled;
+  bool get backgroundMusicEnabled => _backgroundMusicEnabled;
   bool get childMode => _childMode;
 
   void _loadSettings() {
@@ -25,6 +27,7 @@ class SettingsProvider extends ChangeNotifier {
     
     _soundsEnabled = _box.get('soundsEnabled', defaultValue: true);
     _narrationEnabled = _box.get('narrationEnabled', defaultValue: true);
+    _backgroundMusicEnabled = _box.get('backgroundMusicEnabled', defaultValue: true);
     _childMode = _box.get('childMode', defaultValue: true);
     
     notifyListeners();
@@ -46,6 +49,12 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> toggleNarration() async {
     _narrationEnabled = !_narrationEnabled;
     await _box.put('narrationEnabled', _narrationEnabled);
+    notifyListeners();
+  }
+
+  Future<void> toggleBackgroundMusic() async {
+    _backgroundMusicEnabled = !_backgroundMusicEnabled;
+    await _box.put('backgroundMusicEnabled', _backgroundMusicEnabled);
     notifyListeners();
   }
 

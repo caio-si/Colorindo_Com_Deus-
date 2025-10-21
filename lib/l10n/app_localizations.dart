@@ -41,6 +41,8 @@ class AppLocalizations {
       'audio': 'Áudio',
       'sounds': 'Sons',
       'sounds_subtitle': 'Efeitos sonoros ao pintar',
+      'background_music': 'Música de Fundo',
+      'background_music_subtitle': 'Desligar música',
       'narration': 'Narração',
       'narration_subtitle': 'Narração das histórias',
       'child_mode': 'Modo Infantil',
@@ -105,6 +107,8 @@ class AppLocalizations {
       'audio': 'Audio',
       'sounds': 'Sounds',
       'sounds_subtitle': 'Sound effects when painting',
+      'background_music': 'Background Music',
+      'background_music_subtitle': 'Turn off music',
       'narration': 'Narration',
       'narration_subtitle': 'Story narration',
       'child_mode': 'Child Mode',
@@ -169,6 +173,8 @@ class AppLocalizations {
       'audio': 'Audio',
       'sounds': 'Sonidos',
       'sounds_subtitle': 'Efectos de sonido al pintar',
+      'background_music': 'Música de Fondo',
+      'background_music_subtitle': 'Apagar música',
       'narration': 'Narración',
       'narration_subtitle': 'Narración de historias',
       'child_mode': 'Modo Infantil',
@@ -239,6 +245,8 @@ class AppLocalizations {
   String get audio => translate('audio');
   String get sounds => translate('sounds');
   String get soundsSubtitle => translate('sounds_subtitle');
+  String get backgroundMusic => translate('background_music');
+  String get backgroundMusicSubtitle => translate('background_music_subtitle');
   String get narration => translate('narration');
   String get narrationSubtitle => translate('narration_subtitle');
   String get childMode => translate('child_mode');

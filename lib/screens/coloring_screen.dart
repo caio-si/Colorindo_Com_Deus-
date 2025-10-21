@@ -12,6 +12,8 @@ import '../widgets/free_drawing_canvas.dart';
 import '../widgets/tool_selector_widget.dart';
 import '../widgets/enhanced_tool_selector_widget.dart';
 import '../widgets/modern_tool_selector_widget.dart';
+import '../services/audio_service.dart';
+import '../providers/settings_provider.dart';
 
 class ColoringScreen extends StatefulWidget {
   final Desenho desenho;
@@ -24,10 +26,12 @@ class ColoringScreen extends StatefulWidget {
 
 class _ColoringScreenState extends State<ColoringScreen> {
   final GlobalKey<FreeDrawingCanvasState> _freeDrawingKey = GlobalKey<FreeDrawingCanvasState>();
+  final AudioService _audioService = AudioService();
   
   @override
   void initState() {
     super.initState();
+    _startBackgroundMusic();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<DrawingProvider>(context, listen: false)
           .loadDesenho(widget.desenho);
@@ -237,8 +241,17 @@ class _ColoringScreenState extends State<ColoringScreen> {
     }
   }
 
+  void _startBackgroundMusic() {
+    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    _audioService.setBackgroundMusicEnabled(settingsProvider.backgroundMusicEnabled);
+    if (settingsProvider.backgroundMusicEnabled) {
+      _audioService.playBackgroundMusic();
+    }
+  }
+
   @override
   void dispose() {
+    _audioService.stopBackgroundMusic();
     // Não podemos acessar context após o widget ser desmontado
     // O provider será limpo quando apropriado
     super.dispose();
