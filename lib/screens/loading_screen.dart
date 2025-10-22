@@ -127,18 +127,35 @@ class _LoadingScreenState extends State<LoadingScreen>
                               ],
                             ),
                             child: ClipOval(
-                              child: Image.asset(
-                                'icon/logo.png',
+                              child: Container(
                                 width: 200,
                                 height: 200,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(
-                                    Icons.brush,
-                                    size: 80,
-                                    color: AppColors.primary,
-                                  );
-                                },
+                                decoration: BoxDecoration(
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      Color(0xFFFFD700), // Dourado angelical
+                                      Color(0xFFFFA500), // Laranja dourado
+                                      Color(0xFFFF8C00), // Dourado escuro
+                                    ],
+                                    stops: [0.0, 0.5, 1.0],
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/icon/logo.png',
+                                    width: 160,
+                                    height: 160,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Icon(
+                                        Icons.brush,
+                                        size: 80,
+                                        color: Colors.white,
+                                      );
+                                    },
+                                  ),
+                                ),
                               ),
                             ),
                           ),

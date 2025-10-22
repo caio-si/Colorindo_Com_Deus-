@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fundo branco -->
     <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <item>
+    
+    <!-- Círculo dourado angelical -->
+    <item android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#FFD700" />
+            <size android:width="200dp" android:height="200dp" />
+        </shape>
+    </item>
+    
+    <!-- Logo centralizado -->
+    <item android:gravity="center">
         <bitmap
             android:gravity="center"
-            android:src="@drawable/logo" />
+            android:src="@drawable/logo"
+            android:width="180dp"
+            android:height="180dp" />
     </item>
 </layer-list>

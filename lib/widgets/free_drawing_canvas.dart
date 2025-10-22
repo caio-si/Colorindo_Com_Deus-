@@ -204,6 +204,15 @@ class FreeDrawingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Verificar se há pontos de borracha para otimizar performance
+    final hasEraser = providerLines.any((line) => line.any((p) => p.tool.isEraser)) ||
+                      currentLine.any((p) => p.tool.isEraser);
+
+    // ⚠️ Cria uma camada para permitir BlendMode.clear no Android
+    if (hasEraser) {
+      canvas.saveLayer(Rect.fromLTWH(0, 0, size.width, size.height), Paint());
+    }
+
     // Desenhar todas as linhas do provider (salvas e undo/redo)
     for (final line in providerLines) {
       _drawLine(canvas, line);
@@ -213,6 +222,11 @@ class FreeDrawingPainter extends CustomPainter {
     if (currentLine.isNotEmpty) {
       _drawLine(canvas, currentLine);
     }
+
+    // Finaliza a layer se foi criada
+    if (hasEraser) {
+      canvas.restore();
+    }
   }
 
   void _drawLine(Canvas canvas, List<DrawingPoint> points) {
@@ -220,38 +234,43 @@ class FreeDrawingPainter extends CustomPainter {
     
     // Criar objetos Paint reutilizáveis para melhor performance
     final paint = Paint()
-      ..strokeCap = StrokeCap.round;
-    
-    final eraserPaint = Paint()
-      ..color = Colors.white
       ..strokeCap = StrokeCap.round
-      ..blendMode = BlendMode.clear;
+      ..isAntiAlias = true;
+
+    final eraserPaint = Paint()
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true
+      ..blendMode = BlendMode.clear; // Borracha
     
     for (int i = 0; i < points.length - 1; i++) {
-      if (points[i].position != null && points[i + 1].position != null) {
-        final point = points[i];
-        
-        if (point.tool.isEraser) {
-          // Usar blend mode para apagar (borracha)
-          eraserPaint.strokeWidth = point.brushSize;
-          canvas.drawLine(
-            point.position!,
-            points[i + 1].position!,
-            eraserPaint,
-          );
-        } else {
-          // Pincel normal
-          paint
-            ..color = point.color ?? Colors.black
-            ..strokeWidth = point.brushSize;
-          
-          canvas.drawLine(
-            point.position!,
-            points[i + 1].position!,
-            paint,
-          );
-        }
+      final current = points[i];
+      final next = points[i + 1];
+
+      if (current.position == null || next.position == null) continue;
+
+      if (current.tool.isEraser) {
+        eraserPaint
+          ..strokeWidth = current.brushSize
+          ..color = Colors.transparent;
+
+        // Borracha — desenha linha + círculo para cobertura
+        canvas.drawLine(current.position!, next.position!, eraserPaint);
+        canvas.drawCircle(current.position!, current.brushSize / 2, eraserPaint);
+      } else {
+        paint
+          ..color = current.color ?? Colors.black
+          ..strokeWidth = current.brushSize;
+
+        canvas.drawLine(current.position!, next.position!, paint);
       }
+    }
+
+    // Garante o último ponto da borracha
+    if (points.last.tool.isEraser && points.last.position != null) {
+      eraserPaint
+        ..strokeWidth = points.last.brushSize
+        ..color = Colors.transparent;
+      canvas.drawCircle(points.last.position!, points.last.brushSize / 2, eraserPaint);
     }
   }
 

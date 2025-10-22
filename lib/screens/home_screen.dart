@@ -53,15 +53,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
+      // Resetar flag de música para permitir tocar novamente
+      _isMusicPlaying = false;
+      
       if (kIsWeb) {
         // No Web, só tocar se usuário já interagiu
         if (_hasUserInteracted) {
           _startStartupMusic();
         }
       } else {
-        // No Android, tocar sempre que voltar ao foco
+        // No Android, tocar sempre que voltar ao foco (sem verificação de interação)
+        print('📱 Android: App voltou ao foco, tocando música...');
         _startStartupMusic();
       }
+    } else if (state == AppLifecycleState.paused) {
+      // Parar música quando app vai para background
+      _audioService.stopStartupMusic();
+      _isMusicPlaying = false; // Resetar flag
     }
   }
 
@@ -89,19 +97,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return;
     }
     
-    // Aguardar um pouco para garantir que a tela carregou
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (!_isMusicPlaying) {
-        print('🎵 Iniciando música de início na tela inicial...');
-        _isMusicPlaying = true;
-        _audioService.playStartupMusic().then((_) {
-          print('🎵 Música de início iniciada com sucesso!');
-        }).catchError((error) {
-          print('❌ Erro ao iniciar música: $error');
-          _isMusicPlaying = false;
-        });
-      }
-    });
+    // Verificar se estamos na tela inicial
+    if (!mounted) {
+      print('🎵 Widget não está montado, ignorando música...');
+      return;
+    }
+    
+    // No Android, tocar imediatamente. No Web, aguardar interação
+    if (kIsWeb) {
+      // No Web, aguardar um pouco para garantir que a tela carregou
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (!_isMusicPlaying && mounted) {
+          print('🌐 Web: Iniciando música de início na tela inicial...');
+          _isMusicPlaying = true;
+          _audioService.playStartupMusic().then((_) {
+            print('🎵 Música de início iniciada com sucesso!');
+          }).catchError((error) {
+            print('❌ Erro ao iniciar música: $error');
+            _isMusicPlaying = false;
+          });
+        }
+      });
+    } else {
+      // No Android, tocar imediatamente
+      print('📱 Android: Iniciando música de início imediatamente...');
+      _isMusicPlaying = true;
+      _audioService.playStartupMusic().then((_) {
+        print('🎵 Música de início iniciada com sucesso!');
+      }).catchError((error) {
+        print('❌ Erro ao iniciar música: $error');
+        _isMusicPlaying = false;
+      });
+    }
   }
 
 
@@ -269,57 +296,74 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
-        // Logo personalizada
-        Container(
-          width: 320,
-          height: 320,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 25,
-                offset: const Offset(0, 12),
+        // Logo personalizada (sem círculo branco)
+        Image.asset(
+          'assets/icon/logo.png',
+          width: 400,
+          height: 400,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            // Debug: mostrar erro
+            print('Erro ao carregar logo: $error');
+            return Container(
+              width: 400,
+              height: 400,
+              color: Colors.red.withOpacity(0.3),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, color: Colors.red, size: 40),
+                  Text('Logo não encontrado', style: TextStyle(color: Colors.red)),
+                ],
               ),
-            ],
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/icon/logo.png',
-              width: 320,
-              height: 320,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                // Debug: mostrar erro
-                print('Erro ao carregar logo: $error');
-                return Container(
-                  width: 320,
-                  height: 320,
-                  color: Colors.red.withOpacity(0.3),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error, color: Colors.red, size: 40),
-                      Text('Logo não encontrado', style: TextStyle(color: Colors.red)),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+            );
+          },
         ),
         
         const SizedBox(height: 24),
         
-        // Subtítulo
-        Text(
-          l10n.homeTitle,
-          style: TextStyle(
-            fontSize: 20,
-            color: AppColors.textSecondary,
+        // Subtítulo estilizado
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withOpacity(0.1),
+                AppColors.secondary.withOpacity(0.1),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: AppColors.primary.withOpacity(0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          textAlign: TextAlign.center,
+          child: Text(
+            l10n.homeTitle,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+              letterSpacing: 1.2,
+              shadows: [
+                Shadow(
+                  color: Colors.white.withOpacity(0.8),
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
@@ -365,16 +409,7 @@ class CelestialBackgroundPainter extends CustomPainter {
     _drawStar(canvas, goldStarPaint, size.width * 0.6, size.height * 0.4, 4);
     _drawStar(canvas, goldStarPaint, size.width * 0.2, size.height * 0.8, 4.5);
 
-    // Efeito de brilho suave no centro - mais visível
-    final glowPaint = Paint()
-      ..color = Colors.white.withOpacity(0.2)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawCircle(
-      Offset(size.width * 0.5, size.height * 0.3),
-      size.width * 0.4,
-      glowPaint,
-    );
+    // Efeito de brilho removido para não interferir no logo
   }
 
   void _drawStar(Canvas canvas, Paint paint, double x, double y, double size) {

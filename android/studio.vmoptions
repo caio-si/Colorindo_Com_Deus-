@@ -1,0 +1,8 @@
+# Configurações SSL para Android Studio
+-Djavax.net.ssl.trustStore=NUL
+-Djavax.net.ssl.trustStoreType=Windows-ROOT
+-Djavax.net.ssl.trustStorePassword=
+-Dsun.security.ssl.allowUnsafeRenegotiation=true
+-Dhttps.protocols=TLSv1.2,TLSv1.3
+-Dcom.sun.net.ssl.checkRevocation=false
+-Dtrust_all_cert=true
