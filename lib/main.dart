@@ -13,6 +13,9 @@ import 'screens/loading_screen.dart';
 import 'utils/app_colors.dart';
 import 'l10n/app_localizations.dart';
 
+// RouteObserver global para controlar visibilidade das telas
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -48,6 +51,9 @@ class ColorindoComDeusApp extends StatelessWidget {
           return MaterialApp(
             title: 'Colorindo com Deus',
             debugShowCheckedModeBanner: false,
+            
+            // RouteObserver para controlar visibilidade das telas
+            navigatorObservers: [routeObserver],
             
             // Tema
             theme: ThemeData(

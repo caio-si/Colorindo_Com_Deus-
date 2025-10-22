@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../widgets/animated_button.dart';
 import '../services/audio_service.dart';
+import '../main.dart'; // Para acessar routeObserver
 import 'drawings_selection_screen.dart';
 import 'stories_screen.dart';
 import 'gallery_screen.dart';
@@ -18,10 +19,11 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, RouteAware {
   final AudioService _audioService = AudioService();
   bool _hasUserInteracted = false;
   bool _isMusicPlaying = false;
+  bool _isVisible = false; // Controla se a tela está realmente visível
 
   @override
   void initState() {
@@ -31,103 +33,116 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // Debug para verificar plataforma
     print('🔍 Plataforma detectada: ${kIsWeb ? "Web" : "Mobile"}');
     
-    // No Android, tocar música imediatamente
-    // No Web, aguardar interação do usuário
-    if (kIsWeb) {
-      print('🌐 Executando no Web - aguardando interação do usuário');
-      _waitForUserInteraction();
-    } else {
-      print('📱 Executando no Android - tocando música imediatamente');
-      _startStartupMusic();
-    }
+    // Não tocar música aqui - aguardar tela ficar visível
+    print('🎵 Aguardando tela ficar visível para tocar música...');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
   }
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     WidgetsBinding.instance.removeObserver(this);
     _audioService.stopStartupMusic();
     super.dispose();
   }
 
+  // ===== MÉTODOS DO ROUTEAWARE =====
+  
+  @override
+  void didPush() {
+    // Tela foi exibida pela primeira vez
+    print('🎵 HomeScreen: didPush - Tela exibida pela primeira vez');
+    _isVisible = true;
+    _startStartupMusic();
+  }
+
+  @override
+  void didPopNext() {
+    // Voltou para esta tela (ex: usuário voltou da outra tela)
+    print('🎵 HomeScreen: didPopNext - Voltou para a tela inicial');
+    _isVisible = true;
+    _startStartupMusic();
+  }
+
+  @override
+  void didPushNext() {
+    // Saiu desta tela (foi para outra)
+    print('🎵 HomeScreen: didPushNext - Saiu da tela inicial');
+    _isVisible = false;
+    _audioService.stopStartupMusic();
+    _isMusicPlaying = false;
+  }
+
+  @override
+  void didPop() {
+    // Tela removida da pilha
+    print('🎵 HomeScreen: didPop - Tela removida da pilha');
+    _isVisible = false;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    
+    // Só processar se estivermos realmente na HomeScreen e visível
+    if (!mounted || !_isVisible) return;
+    
     if (state == AppLifecycleState.resumed) {
-      // Resetar flag de música para permitir tocar novamente
-      _isMusicPlaying = false;
-      
-      if (kIsWeb) {
-        // No Web, só tocar se usuário já interagiu
-        if (_hasUserInteracted) {
-          _startStartupMusic();
-        }
-      } else {
-        // No Android, tocar sempre que voltar ao foco (sem verificação de interação)
-        print('📱 Android: App voltou ao foco, tocando música...');
-        _startStartupMusic();
-      }
+      print('🎵 App voltou ao foco - HomeScreen está visível, tocando música...');
+      _startStartupMusic();
     } else if (state == AppLifecycleState.paused) {
-      // Parar música quando app vai para background
-      _audioService.stopStartupMusic();
-      _isMusicPlaying = false; // Resetar flag
+      print('🎵 App foi para background, pausando música...');
+      _audioService.pauseStartupMusic();
     }
   }
 
   void _waitForUserInteraction() {
     // Aguardar a primeira interação do usuário
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Adicionar listener para detectar primeira interação
-      _addInteractionListener();
-    });
+    print('🌐 Web: Aguardando primeira interação do usuário...');
+    // Não fazer nada aqui - a interação será detectada nos botões
   }
 
-  void _addInteractionListener() {
-    // Detectar primeira interação do usuário
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_hasUserInteracted) {
-        _hasUserInteracted = true;
+  void _onUserInteraction() {
+    if (!_hasUserInteracted) {
+      print('🌐 Web: Usuário interagiu pela primeira vez!');
+      _hasUserInteracted = true;
+      if (_isVisible) {
         _startStartupMusic();
       }
-    });
+    }
   }
 
-  void _startStartupMusic() {
-    if (_isMusicPlaying) {
-      print('🎵 Música já está tocando, ignorando...');
+  void _startStartupMusic() async {
+    if (_isMusicPlaying || !_isVisible) {
+      print('🎵 Música já está tocando ou tela não está visível, ignorando...');
       return;
     }
     
-    // Verificar se estamos na tela inicial
+    // Verificar se estamos na tela inicial e o widget está montado
     if (!mounted) {
       print('🎵 Widget não está montado, ignorando música...');
       return;
     }
     
-    // No Android, tocar imediatamente. No Web, aguardar interação
-    if (kIsWeb) {
-      // No Web, aguardar um pouco para garantir que a tela carregou
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (!_isMusicPlaying && mounted) {
-          print('🌐 Web: Iniciando música de início na tela inicial...');
-          _isMusicPlaying = true;
-          _audioService.playStartupMusic().then((_) {
-            print('🎵 Música de início iniciada com sucesso!');
-          }).catchError((error) {
-            print('❌ Erro ao iniciar música: $error');
-            _isMusicPlaying = false;
-          });
-        }
-      });
-    } else {
-      // No Android, tocar imediatamente
-      print('📱 Android: Iniciando música de início imediatamente...');
+    // No Web, só tocar se usuário já interagiu
+    if (kIsWeb && !_hasUserInteracted) {
+      print('🌐 Web: Usuário ainda não interagiu, aguardando...');
+      return;
+    }
+    
+    try {
+      print('🎵 Iniciando música de início na HomeScreen...');
       _isMusicPlaying = true;
-      _audioService.playStartupMusic().then((_) {
-        print('🎵 Música de início iniciada com sucesso!');
-      }).catchError((error) {
-        print('❌ Erro ao iniciar música: $error');
-        _isMusicPlaying = false;
-      });
+      await _audioService.playStartupMusic();
+      print('🎵 Música de início iniciada com sucesso!');
+    } catch (e) {
+      print('❌ Erro ao iniciar música: $e');
+      _isMusicPlaying = false;
     }
   }
 
@@ -188,6 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         customIcon: 'assets/icon/Paleta.png', // Ícone personalizado
                         color: AppColors.primary,
                         onTap: () {
+                          _onUserInteraction(); // Detectar interação do usuário
                           _isMusicPlaying = false;
                           _audioService.stopStartupMusic();
                           Navigator.push(
@@ -207,6 +223,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         customIcon: 'assets/icon/Biblia.png', // Ícone personalizado
                         color: AppColors.secondary,
                         onTap: () {
+                          _onUserInteraction(); // Detectar interação do usuário
                           _isMusicPlaying = false;
                           _audioService.stopStartupMusic();
                           Navigator.push(
@@ -225,6 +242,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         icon: Icons.photo_library,
                         color: AppColors.accent,
                         onTap: () {
+                          _onUserInteraction(); // Detectar interação do usuário
                           _isMusicPlaying = false;
                           _audioService.stopStartupMusic();
                           Navigator.push(
@@ -246,6 +264,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               icon: Icons.settings,
                               color: AppColors.info,
                               onTap: () {
+                                _onUserInteraction(); // Detectar interação do usuário
                                 _isMusicPlaying = false;
                                 _audioService.stopStartupMusic();
                                 Navigator.push(
@@ -265,6 +284,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               icon: Icons.info,
                               color: AppColors.success,
                               onTap: () {
+                                _onUserInteraction(); // Detectar interação do usuário
                                 _isMusicPlaying = false;
                                 _audioService.stopStartupMusic();
                                 Navigator.push(

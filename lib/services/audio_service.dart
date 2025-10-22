@@ -243,6 +243,14 @@ class AudioService {
     await _startupMusicPlayer.resume();
   }
 
+  bool isStartupMusicPlaying() {
+    return _startupMusicPlayer.state == PlayerState.playing;
+  }
+
+  bool isBackgroundMusicPlaying() {
+    return _backgroundMusicPlayer.state == PlayerState.playing;
+  }
+
   void dispose() {
     _soundPlayer.dispose();
     _narrationPlayer.dispose();
