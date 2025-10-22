@@ -9,10 +9,12 @@ class AudioService {
   final AudioPlayer _soundPlayer = AudioPlayer();
   final AudioPlayer _narrationPlayer = AudioPlayer();
   final AudioPlayer _backgroundMusicPlayer = AudioPlayer();
+  final AudioPlayer _startupMusicPlayer = AudioPlayer();
   
   bool _soundsEnabled = true;
   bool _narrationEnabled = true;
   bool _backgroundMusicEnabled = true;
+  bool _startupMusicEnabled = true;
 
   void setSoundsEnabled(bool enabled) {
     _soundsEnabled = enabled;
@@ -26,6 +28,13 @@ class AudioService {
     _backgroundMusicEnabled = enabled;
     if (!enabled) {
       stopBackgroundMusic();
+    }
+  }
+
+  void setStartupMusicEnabled(bool enabled) {
+    _startupMusicEnabled = enabled;
+    if (!enabled) {
+      stopStartupMusic();
     }
   }
 
@@ -148,10 +157,97 @@ class AudioService {
     await _backgroundMusicPlayer.resume();
   }
 
+  Future<void> playStartupMusic() async {
+    if (!_startupMusicEnabled) {
+      print('🎵 Música de início desabilitada pelo usuário');
+      return;
+    }
+    
+    print('🎵 ===== DEBUG MÚSICA DE INÍCIO =====');
+    print('🎵 Status: Iniciando música de início...');
+    print('🎵 Caminho: audio/Music/musica_inicio.mp3');
+    print('🎵 Player: ${_startupMusicPlayer.runtimeType}');
+    print('🎵 Verificando se arquivo existe...');
+    
+    try {
+      // Parar qualquer reprodução anterior
+      print('🎵 Parando reprodução anterior...');
+      await _startupMusicPlayer.stop();
+      
+      // Aguardar um pouco
+      await Future.delayed(const Duration(milliseconds: 200));
+      
+      // Configurar o player
+      print('🎵 Configurando player...');
+      await _startupMusicPlayer.setReleaseMode(ReleaseMode.loop);
+      await _startupMusicPlayer.setVolume(0.4); // Volume um pouco mais alto para início
+      
+      print('🎵 Tentando reproduzir arquivo...');
+      // Tentar reproduzir
+      await _startupMusicPlayer.play(AssetSource('audio/Music/musica_inicio.mp3'));
+      
+      print('🎵 ✅ Música de início iniciada com sucesso!');
+      print('🎵 ===== FIM DEBUG MÚSICA DE INÍCIO =====');
+      
+    } catch (e) {
+      print('❌ ===== ERRO DETALHADO MÚSICA DE INÍCIO =====');
+      print('❌ Erro principal: $e');
+      print('❌ Tipo do erro: ${e.runtimeType}');
+      
+      if (e.toString().contains('DEMUXER_ERROR')) {
+        print('❌ PROBLEMA: Arquivo MP3 corrompido ou formato inválido');
+        print('❌ SOLUÇÃO: Verificar se o arquivo é um MP3 válido');
+      } else if (e.toString().contains('404')) {
+        print('❌ PROBLEMA: Arquivo não encontrado');
+        print('❌ SOLUÇÃO: Verificar caminho do arquivo');
+      } else if (e.toString().contains('Format error')) {
+        print('❌ PROBLEMA: Formato de arquivo incompatível');
+        print('❌ SOLUÇÃO: Converter para formato MP3 compatível');
+      }
+      
+      // Tentar uma abordagem alternativa
+      try {
+        print('🔄 Tentando abordagem alternativa...');
+        await _startupMusicPlayer.stop();
+        await Future.delayed(const Duration(milliseconds: 500));
+        
+        print('🔄 Tentativa 2: Reproduzir novamente...');
+        await _startupMusicPlayer.play(AssetSource('audio/Music/musica_inicio.mp3'));
+        print('🎵 ✅ Música de início iniciada na tentativa 2!');
+        
+      } catch (e2) {
+        print('❌ Erro na tentativa 2: $e2');
+        
+        // Tentar parar qualquer reprodução em andamento
+        try {
+          await _startupMusicPlayer.stop();
+        } catch (stopError) {
+          print('❌ Erro ao parar música de início: $stopError');
+        }
+      }
+      
+      print('❌ ===== FIM ERRO DETALHADO MÚSICA DE INÍCIO =====');
+    }
+  }
+
+  Future<void> stopStartupMusic() async {
+    await _startupMusicPlayer.stop();
+  }
+
+  Future<void> pauseStartupMusic() async {
+    await _startupMusicPlayer.pause();
+  }
+
+  Future<void> resumeStartupMusic() async {
+    if (!_startupMusicEnabled) return;
+    await _startupMusicPlayer.resume();
+  }
+
   void dispose() {
     _soundPlayer.dispose();
     _narrationPlayer.dispose();
     _backgroundMusicPlayer.dispose();
+    _startupMusicPlayer.dispose();
   }
 }
 

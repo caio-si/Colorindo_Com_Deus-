@@ -1,16 +1,109 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../widgets/animated_button.dart';
+import '../services/audio_service.dart';
 import 'drawings_selection_screen.dart';
 import 'stories_screen.dart';
 import 'gallery_screen.dart';
 import 'settings_screen.dart';
 import 'about_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  final AudioService _audioService = AudioService();
+  bool _hasUserInteracted = false;
+  bool _isMusicPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
+    // Debug para verificar plataforma
+    print('🔍 Plataforma detectada: ${kIsWeb ? "Web" : "Mobile"}');
+    
+    // No Android, tocar música imediatamente
+    // No Web, aguardar interação do usuário
+    if (kIsWeb) {
+      print('🌐 Executando no Web - aguardando interação do usuário');
+      _waitForUserInteraction();
+    } else {
+      print('📱 Executando no Android - tocando música imediatamente');
+      _startStartupMusic();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _audioService.stopStartupMusic();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      if (kIsWeb) {
+        // No Web, só tocar se usuário já interagiu
+        if (_hasUserInteracted) {
+          _startStartupMusic();
+        }
+      } else {
+        // No Android, tocar sempre que voltar ao foco
+        _startStartupMusic();
+      }
+    }
+  }
+
+  void _waitForUserInteraction() {
+    // Aguardar a primeira interação do usuário
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Adicionar listener para detectar primeira interação
+      _addInteractionListener();
+    });
+  }
+
+  void _addInteractionListener() {
+    // Detectar primeira interação do usuário
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_hasUserInteracted) {
+        _hasUserInteracted = true;
+        _startStartupMusic();
+      }
+    });
+  }
+
+  void _startStartupMusic() {
+    if (_isMusicPlaying) {
+      print('🎵 Música já está tocando, ignorando...');
+      return;
+    }
+    
+    // Aguardar um pouco para garantir que a tela carregou
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!_isMusicPlaying) {
+        print('🎵 Iniciando música de início na tela inicial...');
+        _isMusicPlaying = true;
+        _audioService.playStartupMusic().then((_) {
+          print('🎵 Música de início iniciada com sucesso!');
+        }).catchError((error) {
+          print('❌ Erro ao iniciar música: $error');
+          _isMusicPlaying = false;
+        });
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +161,8 @@ class HomeScreen extends StatelessWidget {
                         customIcon: 'assets/icon/Paleta.png', // Ícone personalizado
                         color: AppColors.primary,
                         onTap: () {
+                          _isMusicPlaying = false;
+                          _audioService.stopStartupMusic();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -85,6 +180,8 @@ class HomeScreen extends StatelessWidget {
                         customIcon: 'assets/icon/Biblia.png', // Ícone personalizado
                         color: AppColors.secondary,
                         onTap: () {
+                          _isMusicPlaying = false;
+                          _audioService.stopStartupMusic();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -101,6 +198,8 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.photo_library,
                         color: AppColors.accent,
                         onTap: () {
+                          _isMusicPlaying = false;
+                          _audioService.stopStartupMusic();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -120,6 +219,8 @@ class HomeScreen extends StatelessWidget {
                               icon: Icons.settings,
                               color: AppColors.info,
                               onTap: () {
+                                _isMusicPlaying = false;
+                                _audioService.stopStartupMusic();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -137,6 +238,8 @@ class HomeScreen extends StatelessWidget {
                               icon: Icons.info,
                               color: AppColors.success,
                               onTap: () {
+                                _isMusicPlaying = false;
+                                _audioService.stopStartupMusic();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
