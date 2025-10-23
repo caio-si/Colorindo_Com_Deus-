@@ -11,6 +11,7 @@ class AudioMapping {
     '8': 'A Multiplicação dos Pães e Peixes.mp3',
     '9': 'O Bom Samaritano.mp3',
     '10': 'Zaqueu na Árvore.mp3',
+    '11': 'Tentacao_deserto.mp3',
   };
 
   /// Retorna o caminho do arquivo de áudio para uma história

@@ -2,6 +2,7 @@ class Historia {
   final String id;
   final String titulo;
   final String descricao;
+  final String? descricaoCompleta;
   final String imagemPath;
   final String? audioNarracaoPath;
   final String referenciaBiblica;
@@ -11,6 +12,7 @@ class Historia {
     required this.id,
     required this.titulo,
     required this.descricao,
+    this.descricaoCompleta,
     required this.imagemPath,
     this.audioNarracaoPath,
     required this.referenciaBiblica,
@@ -22,6 +24,7 @@ class Historia {
       'id': id,
       'titulo': titulo,
       'descricao': descricao,
+      'descricaoCompleta': descricaoCompleta,
       'imagemPath': imagemPath,
       'audioNarracaoPath': audioNarracaoPath,
       'referenciaBiblica': referenciaBiblica,
@@ -34,6 +37,7 @@ class Historia {
       id: json['id'],
       titulo: json['titulo'],
       descricao: json['descricao'],
+      descricaoCompleta: json['descricaoCompleta'],
       imagemPath: json['imagemPath'],
       audioNarracaoPath: json['audioNarracaoPath'],
       referenciaBiblica: json['referenciaBiblica'],

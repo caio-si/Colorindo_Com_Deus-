@@ -85,6 +85,15 @@ class HistoriasData {
         referenciaBiblica: 'Lucas 19:1-10',
         desenhoId: 'desenho_10',
       ),
+      Historia(
+        id: '11',
+        titulo: 'A Tentação de Jesus no Deserto',
+        descricao: 'Depois do batismo, Jesus foi levado pelo Espírito Santo ao deserto, onde ficou 40 dias sem comer. Satanás apareceu para tentá-Lo três vezes: transformar pedras em pão, pular do templo e adorar o diabo em troca de poder. Jesus resistiu a todas as tentações usando a Palavra de Deus, mostrando que devemos confiar em Deus acima de tudo.',
+        descricaoCompleta: 'Depois que Jesus foi batizado por João Batista no rio Jordão, o Espírito Santo O guiou até o deserto. Ele ficou 40 dias e 40 noites lá, sem comer nada, orando e se preparando para a missão que Deus havia lhe dado.\n\nQuando Ele estava com muita fome, Satanás apareceu para tentar Jesus.\n\n😈 Primeira Tentação – Transformar pedras em pão\nO diabo disse: "Se tu és o Filho de Deus, manda que estas pedras se transformem em pães."\nMas Jesus respondeu com firmeza: "Está escrito: Nem só de pão viverá o homem, mas de toda palavra que sai da boca de Deus." (Deuteronômio 8:3)\n\n👉 Lição: Jesus mostrou que o mais importante não é a comida, mas confiar em Deus e em Sua Palavra.\n\n😈 Segunda Tentação – Pular do alto do templo\nEntão Satanás levou Jesus até a parte mais alta do templo em Jerusalém e disse: "Se tu és o Filho de Deus, lança-te daqui abaixo, porque está escrito: \'Aos seus anjos dará ordens a teu respeito, e eles te sustentarão com as mãos.\'"\nMas Jesus respondeu: "Também está escrito: Não tentarás o Senhor teu Deus." (Deuteronômio 6:16)\n\n👉 Lição: Não devemos testar o poder de Deus nem agir com orgulho, achando que Ele precisa provar algo pra nós.\n\n😈 Terceira Tentação – Poder e riquezas do mundo\nDepois, o diabo levou Jesus para um monte muito alto, mostrou todos os reinos do mundo e disse: "Tudo isso te darei, se prostrado me adorares."\nEntão Jesus ordenou: "Vai-te, Satanás! Porque está escrito: \'Ao Senhor teu Deus adorarás, e só a Ele servirás.\'" (Deuteronômio 6:13)\n\n👉 Lição: Jesus nos ensina que somente Deus merece adoração — nada neste mundo vale mais do que servir a Ele.\n\n🕊️ Vitória e Consolação\nApós essas três tentações, o diabo foi embora, derrotado. Então anjos vieram e serviram Jesus, trazendo conforto e alimento.',
+        imagemPath: ImageMapping.getStoryImagePath('11') ?? 'assets/images/stories/Tentacao_deserto_Colorido.png',
+        referenciaBiblica: 'Mateus 4:1-11',
+        desenhoId: 'desenho_11',
+      ),
     ];
   }
 }

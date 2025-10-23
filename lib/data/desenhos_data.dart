@@ -14,6 +14,7 @@ class DesenhosData {
       _criarDesenhoSimples('desenho_8', '8', 'Multiplicação dos Pães'),
       _criarDesenhoSimples('desenho_9', '9', 'O Bom Samaritano'),
       _criarDesenhoSimples('desenho_10', '10', 'Zaqueu na Árvore'),
+      _criarDesenhoSimples('desenho_11', '11', 'A Tentação de Jesus no Deserto'),
     ];
   }
 

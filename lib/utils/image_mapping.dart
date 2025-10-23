@@ -12,6 +12,7 @@ class ImageMapping {
     '8': 'Multiplicador de pães.png', // Para multiplicação dos pães
     '9': 'O Bom Samaritano.png', // Para bom samaritano
     '10': 'Zaqueu na Arvore.png', // Para Zaqueu (usando o que temos)
+    '11': 'Tentacao_deserto.png', // Para A Tentação de Jesus no Deserto
   };
 
   // Mapeamento para imagens das histórias (ilustrações)
@@ -26,6 +27,7 @@ class ImageMapping {
     '8': 'Multiplicador de pães colorido.png',
     '9': 'O Bom Samaritano colorido.png',
     '10': 'Zaqueu na Arvore colorido.png',
+    '11': 'Tentacao_deserto_Colorido.png', // Para A Tentação de Jesus no Deserto
   };
 
   /// Retorna o caminho da imagem do desenho para uma história

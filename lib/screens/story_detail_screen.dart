@@ -207,7 +207,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       
                       // Descrição completa
                       Text(
-                        widget.historia.descricao,
+                        widget.historia.descricaoCompleta ?? widget.historia.descricao,
                         style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textSecondary,
