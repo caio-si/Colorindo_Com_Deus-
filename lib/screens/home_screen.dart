@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_colors.dart';
 import '../widgets/animated_button.dart';
+import '../widgets/banner_ad_widget.dart';
 import '../services/audio_service.dart';
 import '../main.dart'; // Para acessar routeObserver
 import 'drawings_selection_screen.dart';
@@ -303,6 +304,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ro
                 ),
                 
                 const SizedBox(height: 40),
+                
+                // Banner Ad na parte inferior
+                const BannerAdWidget(),
+                
+                const SizedBox(height: 20),
                   ],
                 ),
               ),

@@ -12,6 +12,7 @@ import '../widgets/free_drawing_canvas.dart';
 import '../widgets/tool_selector_widget.dart';
 import '../widgets/enhanced_tool_selector_widget.dart';
 import '../widgets/modern_tool_selector_widget.dart';
+import '../widgets/banner_ad_widget.dart';
 import '../services/audio_service.dart';
 import '../providers/settings_provider.dart';
 
@@ -178,6 +179,9 @@ class _ColoringScreenState extends State<ColoringScreen> {
               ],
             ),
           ),
+          
+          // Banner Ad na parte inferior
+          const BannerAdWidget(),
         ],
       ),
     );

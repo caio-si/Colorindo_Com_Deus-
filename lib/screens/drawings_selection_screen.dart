@@ -6,6 +6,9 @@ import '../utils/image_mapping.dart';
 import '../data/desenhos_data.dart';
 import '../models/desenho.dart';
 import '../providers/drawing_provider.dart';
+import '../services/ad_service.dart';
+import '../widgets/drawing_unlock_widget.dart';
+import '../widgets/interstitial_ad_service.dart';
 import 'coloring_screen.dart';
 
 class DrawingsSelectionScreen extends StatelessWidget {
@@ -57,6 +60,9 @@ class DrawingsSelectionScreen extends StatelessWidget {
   }
 
   void _startNewDrawing(BuildContext context, Desenho desenho) async {
+    // Incrementar contador de intersticial
+    AdService.incrementInterstitialCounter();
+    
     final drawingProvider = Provider.of<DrawingProvider>(context, listen: false);
     
     // Limpar qualquer progresso existente para criar um novo desenho
@@ -68,10 +74,13 @@ class DrawingsSelectionScreen extends StatelessWidget {
         builder: (_) => ColoringScreen(desenho: desenho),
       ),
     );
+    
+    // Mostrar intersticial se necessário
+    await InterstitialAdService.showAdIfNeeded();
   }
 }
 
-class _DrawingCard extends StatelessWidget {
+class _DrawingCard extends StatefulWidget {
   final Desenho desenho;
   final VoidCallback onTap;
 
@@ -80,9 +89,33 @@ class _DrawingCard extends StatelessWidget {
     required this.onTap,
   });
 
+  @override
+  State<_DrawingCard> createState() => _DrawingCardState();
+}
+
+class _DrawingCardState extends State<_DrawingCard> {
+  bool _isLocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLockStatus();
+  }
+
+  Future<void> _checkLockStatus() async {
+    // Obter o ID da história correspondente ao desenho
+    final historiaId = widget.desenho.id.replaceAll('desenho_', '');
+    final isLocked = await AdService.isStoryLocked(historiaId);
+    if (mounted) {
+      setState(() {
+        _isLocked = isLocked;
+      });
+    }
+  }
+
   Widget _getDrawingImage() {
     // Obter o ID da história correspondente ao desenho
-    final historiaId = desenho.id.replaceAll('desenho_', '');
+    final historiaId = widget.desenho.id.replaceAll('desenho_', '');
     final imagePath = ImageMapping.getDrawingImagePath(historiaId);
     
     if (imagePath != null) {
@@ -110,7 +143,7 @@ class _DrawingCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    desenho.titulo,
+                    widget.desenho.titulo,
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -139,7 +172,7 @@ class _DrawingCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              desenho.titulo,
+              widget.desenho.titulo,
               style: TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
@@ -154,8 +187,34 @@ class _DrawingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLocked) {
+      // Widget de desbloqueio para desenhos bloqueados
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: DrawingUnlockWidget(
+          storyId: widget.desenho.id.replaceAll('desenho_', ''),
+          drawingTitle: widget.desenho.titulo,
+          onUnlocked: () {
+            setState(() {
+              _isLocked = false;
+            });
+          },
+        ),
+      );
+    }
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -190,7 +249,7 @@ class _DrawingCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(12),
               child: Text(
-                desenho.titulo,
+                widget.desenho.titulo,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

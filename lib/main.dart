@@ -12,6 +12,8 @@ import 'screens/home_screen.dart';
 import 'screens/loading_screen.dart';
 import 'utils/app_colors.dart';
 import 'l10n/app_localizations.dart';
+import 'services/ad_service.dart';
+import 'widgets/interstitial_ad_service.dart';
 
 // RouteObserver global para controlar visibilidade das telas
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -24,6 +26,12 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox('progress');
   await Hive.openBox('gallery');
+  
+  // Inicializar AdMob
+  await AdService.initialize();
+  
+  // Carregar intersticiais
+  await InterstitialAdService.loadAd();
   
   // Manter orientação vertical
   await SystemChrome.setPreferredOrientations([

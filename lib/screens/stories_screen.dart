@@ -8,6 +8,9 @@ import '../data/desenhos_data.dart';
 import '../models/historia.dart';
 import '../providers/settings_provider.dart';
 import '../services/audio_service.dart';
+import '../services/ad_service.dart';
+import '../widgets/story_unlock_widget.dart';
+import '../widgets/interstitial_ad_service.dart';
 import 'coloring_screen.dart';
 import 'story_detail_screen.dart';
 
@@ -60,7 +63,23 @@ class _StoryCard extends StatefulWidget {
 
 class _StoryCardState extends State<_StoryCard> {
   bool _isPlaying = false;
+  bool _isLocked = false;
   final AudioService _audioService = AudioService();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLockStatus();
+  }
+
+  Future<void> _checkLockStatus() async {
+    final isLocked = await AdService.isStoryLocked(widget.historia.id);
+    if (mounted) {
+      setState(() {
+        _isLocked = isLocked;
+      });
+    }
+  }
 
   Future<void> _toggleNarration() async {
     if (!Provider.of<SettingsProvider>(context, listen: false).narrationEnabled) {
@@ -118,6 +137,18 @@ class _StoryCardState extends State<_StoryCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Widget de desbloqueio se estiver bloqueada
+          if (_isLocked) ...[
+            StoryUnlockWidget(
+              storyId: widget.historia.id,
+              storyTitle: widget.historia.titulo,
+              onUnlocked: () {
+                setState(() {
+                  _isLocked = false;
+                });
+              },
+            ),
+          ] else ...[
           // Imagem de capa
           Container(
             height: 150,
@@ -231,13 +262,19 @@ class _StoryCardState extends State<_StoryCard> {
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
+                          // Incrementar contador de intersticial
+                          AdService.incrementInterstitialCounter();
+                          
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => StoryDetailScreen(historia: widget.historia),
                             ),
                           );
+                          
+                          // Mostrar intersticial se necessário
+                          await InterstitialAdService.showAdIfNeeded();
                         },
                         icon: const Icon(Icons.visibility),
                         label: const Text('Ver História'),
@@ -256,7 +293,10 @@ class _StoryCardState extends State<_StoryCard> {
                     
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
+                          // Incrementar contador de intersticial
+                          AdService.incrementInterstitialCounter();
+                          
                           final desenho = DesenhosData.obterDesenhoPorId(
                             widget.historia.desenhoId,
                           );
@@ -268,6 +308,9 @@ class _StoryCardState extends State<_StoryCard> {
                               ),
                             );
                           }
+                          
+                          // Mostrar intersticial se necessário
+                          await InterstitialAdService.showAdIfNeeded();
                         },
                         icon: const Icon(Icons.palette),
                         label: Text(l10n.colorThisStory),
@@ -286,6 +329,7 @@ class _StoryCardState extends State<_StoryCard> {
               ],
             ),
           ),
+          ],
         ],
       ),
     );
